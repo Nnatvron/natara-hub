@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   UserRound,
@@ -37,20 +37,41 @@ import "./Profile.css";
 function Profile() {
   const navigate = useNavigate();
 
+  /*
+  |--------------------------------------------------------------------------
+  | AUTH STATE
+  |--------------------------------------------------------------------------
+  */
+
   const [currentUser, setCurrentUser] =
     useState(null);
 
   const [authLoading, setAuthLoading] =
     useState(true);
 
-  const { completedMaterials } =
-    useProgress();
+  /*
+  |--------------------------------------------------------------------------
+  | LEARNING DATA
+  |--------------------------------------------------------------------------
+  */
 
-  const { bookmarks } =
-    useBookmark();
+  const {
+    completedMaterials,
+  } = useProgress();
 
-  const { scores } =
-    useQuiz();
+  const {
+    bookmarks,
+  } = useBookmark();
+
+  const {
+    scores,
+  } = useQuiz();
+
+  /*
+  |--------------------------------------------------------------------------
+  | FIREBASE AUTH LISTENER
+  |--------------------------------------------------------------------------
+  */
 
   useEffect(() => {
     const unsubscribe =
@@ -67,8 +88,30 @@ function Profile() {
     };
   }, []);
 
+  /*
+  |--------------------------------------------------------------------------
+  | ACCOUNT
+  |--------------------------------------------------------------------------
+  */
+
   const isLoggedIn =
     currentUser !== null;
+
+  const userName =
+    currentUser?.displayName ||
+    "Mahasiswa";
+
+  const userInitial =
+    currentUser?.displayName
+      ?.charAt(0)
+      .toUpperCase() ||
+    "M";
+
+  /*
+  |--------------------------------------------------------------------------
+  | MATERIAL STATISTICS
+  |--------------------------------------------------------------------------
+  */
 
   const totalMaterials =
     isLoggedIn
@@ -76,14 +119,21 @@ function Profile() {
       : 0;
 
   const completedCount =
-    isLoggedIn
-      ? materials.filter(
-          (material) =>
-            completedMaterials.includes(
-              material.id
-            )
-        ).length
-      : 0;
+    useMemo(() => {
+      if (!isLoggedIn) {
+        return 0;
+      }
+
+      return materials.filter(
+        (material) =>
+          completedMaterials.includes(
+            material.id
+          )
+      ).length;
+    }, [
+      isLoggedIn,
+      completedMaterials,
+    ]);
 
   const progress =
     totalMaterials > 0
@@ -94,34 +144,103 @@ function Profile() {
         )
       : 0;
 
+  /*
+  |--------------------------------------------------------------------------
+  | QUIZ STATISTICS
+  |--------------------------------------------------------------------------
+  |
+  | useQuiz menyimpan score menggunakan
+  | material.id.
+  |
+  | Karena itu kita menggunakan
+  | quiz.materialId sebagai key.
+  |
+  */
+
   const attemptedQuizzes =
-    isLoggedIn
-      ? quizzes.filter(
-          (quiz) =>
-            scores[quiz.id] !==
-            undefined
-        )
-      : [];
+    useMemo(() => {
+      if (!isLoggedIn) {
+        return [];
+      }
+
+      return quizzes.filter(
+        (quiz) =>
+          scores[
+            quiz.materialId
+          ] !== undefined
+      );
+    }, [
+      isLoggedIn,
+      scores,
+    ]);
 
   const passedQuizzes =
     attemptedQuizzes.filter(
       (quiz) =>
-        scores[quiz.id] === 100
+        scores[
+          quiz.materialId
+        ] === 100
     ).length;
+
+  /*
+  |--------------------------------------------------------------------------
+  | QUIZ AVERAGE
+  |--------------------------------------------------------------------------
+  */
+
+  const quizAverage =
+    attemptedQuizzes.length > 0
+      ? Math.round(
+          attemptedQuizzes.reduce(
+            (total, quiz) =>
+              total +
+              Number(
+                scores[
+                  quiz.materialId
+                ] ?? 0
+              ),
+            0
+          ) /
+            attemptedQuizzes.length
+        )
+      : 0;
+
+  /*
+  |--------------------------------------------------------------------------
+  | BEST QUIZ SCORE
+  |--------------------------------------------------------------------------
+  */
+
+  const highestQuizScore =
+    attemptedQuizzes.length > 0
+      ? Math.max(
+          ...attemptedQuizzes.map(
+            (quiz) =>
+              Number(
+                scores[
+                  quiz.materialId
+                ] ?? 0
+              )
+          )
+        )
+      : 0;
+
+  /*
+  |--------------------------------------------------------------------------
+  | BOOKMARK
+  |--------------------------------------------------------------------------
+  */
 
   const bookmarkCount =
     isLoggedIn
       ? bookmarks.length
       : 0;
 
-  const userName =
-    currentUser?.displayName ||
-    "Mahasiswa";
-
-  const userInitial =
-    currentUser?.displayName
-      ?.charAt(0)
-      .toUpperCase() || "M";
+  /*
+  |--------------------------------------------------------------------------
+  | LOGOUT
+  |--------------------------------------------------------------------------
+  */
 
   const handleLogout = async (
     redirectTo
@@ -143,11 +262,17 @@ function Profile() {
     }
   };
 
+  /*
+  |--------------------------------------------------------------------------
+  | RENDER
+  |--------------------------------------------------------------------------
+  */
+
   return (
     <div className="profile-page">
+      {/* PROFILE HEADER */}
 
       <section className="profile-card">
-
         <div className="profile-avatar">
           {isLoggedIn ? (
             <span>
@@ -159,7 +284,6 @@ function Profile() {
         </div>
 
         <div className="profile-info">
-
           <span className="profile-eyebrow">
             Student Profile
           </span>
@@ -175,15 +299,13 @@ function Profile() {
               ? "Mahasiswa Teknologi Informasi"
               : "Silakan login untuk mulai belajar"}
           </p>
-
         </div>
-
       </section>
 
+      {/* LEARNING SUMMARY */}
+
       <section className="profile-section">
-
         <div className="profile-section-header">
-
           <div>
             <span>
               Learning Summary
@@ -198,13 +320,10 @@ function Profile() {
               belajarmu di NATARA HUB.
             </p>
           </div>
-
         </div>
 
         <div className="profile-stats">
-
           <div className="profile-stat-card">
-
             <div className="profile-stat-icon">
               <BookOpen size={19} />
             </div>
@@ -218,11 +337,9 @@ function Profile() {
                 {totalMaterials}
               </strong>
             </div>
-
           </div>
 
           <div className="profile-stat-card">
-
             <div className="profile-stat-icon">
               <CheckCircle2 size={19} />
             </div>
@@ -236,11 +353,9 @@ function Profile() {
                 {completedCount}
               </strong>
             </div>
-
           </div>
 
           <div className="profile-stat-card">
-
             <div className="profile-stat-icon">
               <Trophy size={19} />
             </div>
@@ -254,11 +369,9 @@ function Profile() {
                 {passedQuizzes}
               </strong>
             </div>
-
           </div>
 
           <div className="profile-stat-card">
-
             <div className="profile-stat-icon">
               <Bookmark size={19} />
             </div>
@@ -272,17 +385,87 @@ function Profile() {
                 {bookmarkCount}
               </strong>
             </div>
-
           </div>
-
         </div>
-
       </section>
 
+      {/* QUIZ PERFORMANCE */}
+
+      {isLoggedIn && (
+        <section className="profile-section">
+          <div className="profile-section-header">
+            <div>
+              <span>
+                Quiz Performance
+              </span>
+
+              <h2>
+                Performa Quiz
+              </h2>
+
+              <p>
+                Ringkasan hasil quiz yang
+                sudah kamu kerjakan.
+              </p>
+            </div>
+          </div>
+
+          <div className="profile-stats">
+            <div className="profile-stat-card">
+              <div className="profile-stat-icon">
+                <BookOpen size={19} />
+              </div>
+
+              <div>
+                <span>
+                  Quiz Dikerjakan
+                </span>
+
+                <strong>
+                  {attemptedQuizzes.length}
+                </strong>
+              </div>
+            </div>
+
+            <div className="profile-stat-card">
+              <div className="profile-stat-icon">
+                <Trophy size={19} />
+              </div>
+
+              <div>
+                <span>
+                  Rata-rata Nilai
+                </span>
+
+                <strong>
+                  {quizAverage}
+                </strong>
+              </div>
+            </div>
+
+            <div className="profile-stat-card">
+              <div className="profile-stat-icon">
+                <CheckCircle2 size={19} />
+              </div>
+
+              <div>
+                <span>
+                  Nilai Tertinggi
+                </span>
+
+                <strong>
+                  {highestQuizScore}
+                </strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* LEARNING PROGRESS */}
+
       <section className="profile-section">
-
         <div className="profile-section-header">
-
           <div>
             <span>
               Learning Progress
@@ -301,24 +484,19 @@ function Profile() {
           <strong className="profile-progress-value">
             {progress}%
           </strong>
-
         </div>
 
         <div className="profile-progress-container">
-
           <div className="profile-progress-bar">
-
             <div
               style={{
                 width:
                   progress + "%",
               }}
             />
-
           </div>
 
           <div className="profile-progress-meta">
-
             <span>
               {completedCount} dari{" "}
               {totalMaterials} materi
@@ -330,17 +508,14 @@ function Profile() {
                 ? "Semua materi selesai"
                 : "Terus lanjut belajar"}
             </span>
-
           </div>
-
         </div>
-
       </section>
 
+      {/* QUICK ACCESS */}
+
       <section className="profile-section">
-
         <div className="profile-section-header">
-
           <div>
             <span>
               Quick Access
@@ -355,17 +530,17 @@ function Profile() {
               sering digunakan.
             </p>
           </div>
-
         </div>
 
         <div className="profile-links">
-
           <Link
             to="/progress"
             className="profile-link-card"
           >
             <div className="profile-link-icon">
-              <CheckCircle2 size={19} />
+              <CheckCircle2
+                size={19}
+              />
             </div>
 
             <div>
@@ -425,15 +600,13 @@ function Profile() {
 
             <ArrowRight size={17} />
           </Link>
-
         </div>
-
       </section>
 
+      {/* ACCOUNT */}
+
       <section className="profile-section">
-
         <div className="profile-section-header">
-
           <div>
             <span>
               Account
@@ -448,12 +621,11 @@ function Profile() {
               kamu.
             </p>
           </div>
-
         </div>
 
-        {!authLoading && !isLoggedIn ? (
+        {!authLoading &&
+        !isLoggedIn ? (
           <div className="profile-links">
-
             <Link
               to="/login"
               className="profile-link-card"
@@ -480,7 +652,9 @@ function Profile() {
               className="profile-link-card"
             >
               <div className="profile-link-icon">
-                <UserPlus size={19} />
+                <UserPlus
+                  size={19}
+                />
               </div>
 
               <div>
@@ -495,11 +669,10 @@ function Profile() {
 
               <ArrowRight size={17} />
             </Link>
-
           </div>
-        ) : !authLoading && isLoggedIn ? (
+        ) : !authLoading &&
+          isLoggedIn ? (
           <div className="profile-links">
-
             <button
               type="button"
               className="profile-link-card profile-account-button"
@@ -510,7 +683,9 @@ function Profile() {
               }
             >
               <div className="profile-link-icon">
-                <UserRoundCog size={19} />
+                <UserRoundCog
+                  size={19}
+                />
               </div>
 
               <div>
@@ -550,12 +725,9 @@ function Profile() {
 
               <ArrowRight size={17} />
             </button>
-
           </div>
         ) : null}
-
       </section>
-
     </div>
   );
 }

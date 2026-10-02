@@ -19,6 +19,7 @@ import {
   validatePassword,
   sendVerificationEmail,
   checkEmailVerification,
+  loginWithGoogle,
 } from "../../firebase/auth";
 
 import {
@@ -54,8 +55,13 @@ function Register() {
 
   const [loading, setLoading] =
     useState(false);
+
+  const [googleLoading, setGoogleLoading] =
+    useState(false);
+
   const [sendingVerification, setSendingVerification] =
     useState(false);
+
   const [checkingVerification, setCheckingVerification] =
     useState(false);
 
@@ -63,9 +69,11 @@ function Register() {
     validatePassword(password);
 
   /*
-    Membuat akun Firebase dan
-    mengirim email verifikasi.
+  |--------------------------------------------------------------------------
+  | MEMBUAT AKUN + KIRIM EMAIL VERIFIKASI
+  |--------------------------------------------------------------------------
   */
+
   const handleSendVerification = async () => {
     setError("");
     setSuccess("");
@@ -118,9 +126,11 @@ function Register() {
       setSendingVerification(true);
 
       /*
-        Kalau akun belum dibuat,
-        buat akun Firebase terlebih dahulu.
+      |--------------------------------------------------------------------------
+      | BUAT AKUN FIREBASE
+      |--------------------------------------------------------------------------
       */
+
       if (!emailCreated) {
         await registerUser(
           cleanName,
@@ -132,9 +142,11 @@ function Register() {
       }
 
       /*
-        Firebase mengirim link
-        verifikasi ke email user.
+      |--------------------------------------------------------------------------
+      | KIRIM EMAIL VERIFIKASI
+      |--------------------------------------------------------------------------
       */
+
       await sendVerificationEmail();
 
       setSuccess(
@@ -183,9 +195,11 @@ function Register() {
   };
 
   /*
-    Mengecek apakah user sudah
-    klik link verifikasi di email.
+  |--------------------------------------------------------------------------
+  | CEK EMAIL VERIFIKASI
+  |--------------------------------------------------------------------------
   */
+
   const handleCheckVerification = async () => {
     setError("");
     setSuccess("");
@@ -223,9 +237,95 @@ function Register() {
   };
 
   /*
-    Membuat profile setelah email
-    benar-benar terverifikasi.
+  |--------------------------------------------------------------------------
+  | GOOGLE SIGN UP
+  |--------------------------------------------------------------------------
   */
+
+  const handleGoogleRegister = async () => {
+    setError("");
+    setSuccess("");
+
+    try {
+      setGoogleLoading(true);
+
+      /*
+      |--------------------------------------------------------------------------
+      | GOOGLE LOGIN
+      |--------------------------------------------------------------------------
+      |
+      | loginWithGoogle() juga akan:
+      |
+      | 1. Membuka Google popup
+      | 2. Login / membuat akun Firebase
+      | 3. Membuat profile Firestore
+      |
+      */
+
+      const user =
+        await loginWithGoogle(true);
+
+      console.log(
+        "Google registration berhasil:",
+        user
+      );
+
+      navigate("/", {
+        replace: true,
+      });
+    } catch (error) {
+      console.error(
+        "Google registration error:",
+        error
+      );
+
+      switch (error.code) {
+        case "auth/popup-closed-by-user":
+          setError(
+            "Pendaftaran Google dibatalkan."
+          );
+          break;
+
+        case "auth/popup-blocked":
+          setError(
+            "Popup Google diblokir browser. Izinkan popup untuk melanjutkan."
+          );
+          break;
+
+        case "auth/cancelled-popup-request":
+          setError(
+            "Permintaan Google dibatalkan."
+          );
+          break;
+
+        case "auth/account-exists-with-different-credential":
+          setError(
+            "Email Google ini sudah terdaftar dengan metode login lain."
+          );
+          break;
+
+        case "auth/network-request-failed":
+          setError(
+            "Koneksi internet bermasalah. Periksa koneksi kamu."
+          );
+          break;
+
+        default:
+          setError(
+            "Pendaftaran dengan Google gagal. Silakan coba lagi."
+          );
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | SELESAIKAN REGISTRASI EMAIL
+  |--------------------------------------------------------------------------
+  */
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -286,10 +386,10 @@ function Register() {
     try {
       setLoading(true);
 
-      const user =
+      const verified =
         await checkEmailVerification();
 
-      if (!user) {
+      if (!verified) {
         setError(
           "Email belum terverifikasi."
         );
@@ -297,7 +397,9 @@ function Register() {
       }
 
       const firebaseUser =
-        await import("../../firebase/config");
+        await import(
+          "../../firebase/config"
+        );
 
       const currentUser =
         firebaseUser.auth.currentUser;
@@ -336,6 +438,8 @@ function Register() {
     <div className="register-page">
       <div className="register-card">
 
+        {/* BRAND */}
+
         <div className="register-brand">
           <div className="register-logo">
             N
@@ -352,6 +456,8 @@ function Register() {
           </div>
         </div>
 
+        {/* HEADER */}
+
         <div className="register-header">
           <h1>
             Buat akun
@@ -363,10 +469,14 @@ function Register() {
           </p>
         </div>
 
+        {/* REGISTER FORM */}
+
         <form
           className="register-form"
           onSubmit={handleSubmit}
         >
+
+          {/* NAME */}
 
           <div className="register-field">
             <label htmlFor="register-name">
@@ -386,10 +496,13 @@ function Register() {
               autoComplete="name"
               disabled={
                 loading ||
-                emailCreated
+                emailCreated ||
+                googleLoading
               }
             />
           </div>
+
+          {/* EMAIL */}
 
           <div className="register-field">
             <label htmlFor="register-email">
@@ -419,7 +532,8 @@ function Register() {
                 disabled={
                   loading ||
                   sendingVerification ||
-                  emailCreated
+                  emailCreated ||
+                  googleLoading
                 }
               />
 
@@ -431,7 +545,8 @@ function Register() {
                   }
                   disabled={
                     loading ||
-                    sendingVerification
+                    sendingVerification ||
+                    googleLoading
                   }
                 >
                   {sendingVerification ? (
@@ -440,11 +555,13 @@ function Register() {
                         size={16}
                         className="register-spinner"
                       />
+
                       Mengirim...
                     </>
                   ) : (
                     <>
                       <Mail size={16} />
+
                       Verifikasi
                     </>
                   )}
@@ -455,6 +572,7 @@ function Register() {
                   disabled
                 >
                   <Check size={16} />
+
                   Terverifikasi
                 </button>
               ) : (
@@ -465,7 +583,8 @@ function Register() {
                   }
                   disabled={
                     loading ||
-                    sendingVerification
+                    sendingVerification ||
+                    googleLoading
                   }
                 >
                   {sendingVerification ? (
@@ -474,6 +593,7 @@ function Register() {
                         size={16}
                         className="register-spinner"
                       />
+
                       Mengirim...
                     </>
                   ) : (
@@ -484,6 +604,8 @@ function Register() {
 
             </div>
           </div>
+
+          {/* EMAIL VERIFICATION BOX */}
 
           {emailCreated &&
             !emailVerified && (
@@ -511,7 +633,8 @@ function Register() {
                   }
                   disabled={
                     checkingVerification ||
-                    loading
+                    loading ||
+                    googleLoading
                   }
                 >
                   {checkingVerification ? (
@@ -520,11 +643,15 @@ function Register() {
                         size={16}
                         className="register-spinner"
                       />
+
                       Mengecek...
                     </>
                   ) : (
                     <>
-                      <Check size={16} />
+                      <Check
+                        size={16}
+                      />
+
                       Saya sudah verifikasi
                     </>
                   )}
@@ -539,6 +666,8 @@ function Register() {
 
               </div>
             )}
+
+          {/* PASSWORD */}
 
           <div className="register-field">
             <label htmlFor="register-password">
@@ -564,7 +693,8 @@ function Register() {
                 autoComplete="new-password"
                 disabled={
                   loading ||
-                  emailCreated
+                  emailCreated ||
+                  googleLoading
                 }
               />
 
@@ -581,7 +711,10 @@ function Register() {
                     ? "Sembunyikan password"
                     : "Tampilkan password"
                 }
-                disabled={loading}
+                disabled={
+                  loading ||
+                  googleLoading
+                }
               >
                 {showPassword ? (
                   <EyeOff size={18} />
@@ -591,6 +724,8 @@ function Register() {
               </button>
 
             </div>
+
+            {/* PASSWORD RULES */}
 
             <div className="register-password-rules">
 
@@ -661,6 +796,8 @@ function Register() {
             </div>
           </div>
 
+          {/* CONFIRM PASSWORD */}
+
           <div className="register-field">
             <label htmlFor="register-confirm-password">
               Konfirmasi password
@@ -687,7 +824,8 @@ function Register() {
                 autoComplete="new-password"
                 disabled={
                   loading ||
-                  emailCreated
+                  emailCreated ||
+                  googleLoading
                 }
               />
 
@@ -704,7 +842,10 @@ function Register() {
                     ? "Sembunyikan password"
                     : "Tampilkan password"
                 }
-                disabled={loading}
+                disabled={
+                  loading ||
+                  googleLoading
+                }
               >
                 {showConfirmPassword ? (
                   <EyeOff size={18} />
@@ -716,11 +857,15 @@ function Register() {
             </div>
           </div>
 
+          {/* ERROR */}
+
           {error && (
             <div className="register-error">
               {error}
             </div>
           )}
+
+          {/* SUCCESS */}
 
           {success && (
             <div className="register-success">
@@ -728,12 +873,15 @@ function Register() {
             </div>
           )}
 
+          {/* REGISTER BUTTON */}
+
           <button
             type="submit"
             className="register-submit"
             disabled={
               loading ||
-              !emailVerified
+              !emailVerified ||
+              googleLoading
             }
           >
             {loading ? (
@@ -742,6 +890,7 @@ function Register() {
                   size={18}
                   className="register-spinner"
                 />
+
                 Membuat akun...
               </>
             ) : emailVerified ? (
@@ -752,6 +901,70 @@ function Register() {
           </button>
 
         </form>
+
+        {/* GOOGLE SIGN UP */}
+
+        <div className="register-divider">
+          <span>atau</span>
+        </div>
+
+        <button
+          type="button"
+          className="register-google"
+          onClick={
+            handleGoogleRegister
+          }
+          disabled={
+            loading ||
+            sendingVerification ||
+            checkingVerification ||
+            googleLoading
+          }
+        >
+          {googleLoading ? (
+            <>
+              <Loader2
+                size={18}
+                className="register-spinner"
+              />
+
+              Menghubungkan Google...
+            </>
+          ) : (
+            <>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  fill="#4285F4"
+                  d="M21.35 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h5.23a4.47 4.47 0 0 1-1.94 2.93v2.43h3.14c1.84-1.69 2.92-4.18 2.92-7.39Z"
+                />
+
+                <path
+                  fill="#34A853"
+                  d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.43c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.72-5.46-4.03H3.3v2.5A9.74 9.74 0 0 0 12 21.75Z"
+                />
+
+                <path
+                  fill="#FBBC05"
+                  d="M6.54 13.86A5.85 5.85 0 0 1 6.24 12c0-.64.11-1.26.3-1.86v-2.5H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.36l3.24-2.5Z"
+                />
+
+                <path
+                  fill="#EA4335"
+                  d="M12 6.11c1.43 0 2.72.49 3.73 1.45l2.8-2.8C16.84 3.16 14.63 2.25 12 2.25a9.74 9.74 0 0 0-8.7 5.39l3.24 2.5C7.31 7.83 9.46 6.11 12 6.11Z"
+                />
+              </svg>
+
+              Daftar dengan Google
+            </>
+          )}
+        </button>
+
+        {/* FOOTER */}
 
         <div className="register-footer">
           <span>

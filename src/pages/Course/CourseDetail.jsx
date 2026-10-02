@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
 import {
   ArrowLeft,
@@ -11,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { onAuthStateChanged } from "firebase/auth";
+
 import { auth } from "../../firebase/config";
 
 import courses from "../../data/courses";
@@ -23,54 +30,46 @@ import "./CourseDetail.css";
 
 function CourseDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
 
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [currentUser, setCurrentUser] =
+    useState(null);
+
+  const [authLoading, setAuthLoading] =
+    useState(true);
 
   const course = courses.find(
     (item) => item.id === id
   );
 
-  const { completedMaterials } = useProgress();
+  const { completedMaterials } =
+    useProgress();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (user) => {
-        setCurrentUser(user);
-        setAuthLoading(false);
-      }
-    );
+    const unsubscribe =
+      onAuthStateChanged(
+        auth,
+        (user) => {
+          setCurrentUser(user);
+          setAuthLoading(false);
+        }
+      );
 
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (authLoading) return;
-
-    if (!currentUser) {
-      navigate("/login", {
-        replace: true,
-        state: {
-          from: "/course/" + id,
-        },
-      });
-    }
-  }, [
-    currentUser,
-    authLoading,
-    navigate,
-    id,
-  ]);
-
   if (!course) {
     return (
       <div className="course-not-found">
-        <h2>Mata kuliah tidak ditemukan</h2>
+        <h2>
+          Mata kuliah tidak ditemukan
+        </h2>
 
         <p>
-          Mata kuliah yang kamu cari tidak tersedia.
+          Mata kuliah yang kamu cari tidak
+          tersedia.
         </p>
 
         <Link to="/semester">
@@ -84,28 +83,36 @@ function CourseDetail() {
   if (authLoading) {
     return (
       <div className="course-not-found">
-        <h2>Memuat mata kuliah...</h2>
+        <h2>
+          Memuat mata kuliah...
+        </h2>
 
         <p>
-          Sedang memeriksa status login kamu.
+          Sedang memeriksa status login
+          kamu.
         </p>
       </div>
     );
   }
 
-  if (!currentUser) {
-    return null;
-  }
+  const isLoggedIn =
+    currentUser !== null;
 
-  const courseMaterials = materials.filter(
-    (material) =>
-      material.courseId === course.id
-  );
+  const courseMaterials =
+    materials.filter(
+      (material) =>
+        material.courseId === course.id
+    );
 
   const completedCourseMaterials =
-    courseMaterials.filter((material) =>
-      completedMaterials.includes(material.id)
-    );
+    isLoggedIn
+      ? courseMaterials.filter(
+          (material) =>
+            completedMaterials.includes(
+              material.id
+            )
+        )
+      : [];
 
   const completedCount =
     completedCourseMaterials.length;
@@ -113,33 +120,51 @@ function CourseDetail() {
   const totalMaterials =
     courseMaterials.length;
 
-  const progress = totalMaterials
-    ? Math.round(
-        (completedCount / totalMaterials) * 100
-      )
-    : 0;
+  const progress =
+    totalMaterials
+      ? Math.round(
+          (completedCount /
+            totalMaterials) *
+            100
+        )
+      : 0;
 
-  const courseModules = modules.filter(
-    (module) =>
-      module.courseId === course.id
-  );
+  const courseModules =
+    modules.filter(
+      (module) =>
+        module.courseId === course.id
+    );
 
-  const semester = course.semester;
+  const semester =
+    course.semester;
 
   /*
-    =========================================
-    MATERIAL LOCK CHECK
-    Materi pertama selalu terbuka.
+  =========================================
+  MATERIAL LOCK CHECK
+  =========================================
 
-    Materi berikutnya hanya terbuka jika
-    materi sebelumnya sudah selesai.
-    =========================================
+  Guest:
+  Semua materi bisa dilihat preview-nya,
+  tetapi akan blur dan meminta login.
+
+  User login:
+  Materi pertama terbuka.
+  Materi berikutnya hanya terbuka jika
+  materi sebelumnya sudah selesai.
+  =========================================
   */
 
-  const isMaterialLocked = (material) => {
+  const isMaterialLocked = (
+    material
+  ) => {
+    if (!isLoggedIn) {
+      return false;
+    }
+
     const globalIndex =
       courseMaterials.findIndex(
-        (item) => item.id === material.id
+        (item) =>
+          item.id === material.id
       );
 
     if (globalIndex <= 0) {
@@ -147,11 +172,27 @@ function CourseDetail() {
     }
 
     const previousMaterial =
-      courseMaterials[globalIndex - 1];
+      courseMaterials[
+        globalIndex - 1
+      ];
 
     return !completedMaterials.includes(
       previousMaterial.id
     );
+  };
+
+  /*
+  =========================================
+  LOGIN HANDLER
+  =========================================
+  */
+
+  const handleLogin = () => {
+    navigate("/login", {
+      state: {
+        from: location,
+      },
+    });
   };
 
   return (
@@ -177,9 +218,13 @@ function CourseDetail() {
             Semester {semester}
           </span>
 
-          <h1>{course.title}</h1>
+          <h1>
+            {course.title}
+          </h1>
 
-          <p>{course.description}</p>
+          <p>
+            {course.description}
+          </p>
 
           <div className="course-detail-meta">
 
@@ -237,7 +282,8 @@ function CourseDetail() {
             </strong>
 
             <span>
-              {completedCount}/{totalMaterials} materi
+              {completedCount}/
+              {totalMaterials} materi
             </span>
           </div>
 
@@ -252,7 +298,8 @@ function CourseDetail() {
           <div
             className="course-main-progress-fill"
             style={{
-              width: progress + "%",
+              width:
+                progress + "%",
             }}
           />
 
@@ -277,8 +324,9 @@ function CourseDetail() {
             </h2>
 
             <p>
-              Pelajari materi secara bertahap dari dasar
-              sampai mini project.
+              {isLoggedIn
+                ? "Pelajari materi secara bertahap dari dasar sampai mini project."
+                : "Materi tersedia untuk dilihat, tetapi kamu perlu login untuk membaca isi materi."}
             </p>
 
           </div>
@@ -293,154 +341,328 @@ function CourseDetail() {
 
           <div className="course-module-list">
 
-            {courseModules.map((module) => {
+            {courseModules.map(
+              (module) => {
 
-              const moduleMaterials =
-                courseMaterials.filter(
-                  (material) =>
-                    material.moduleId === module.id
-                );
+                const moduleMaterials =
+                  courseMaterials.filter(
+                    (material) =>
+                      material.moduleId ===
+                      module.id
+                  );
 
-              const moduleCompleted =
-                moduleMaterials.filter((material) =>
-                  completedMaterials.includes(
-                    material.id
-                  )
-                ).length;
+                const moduleCompleted =
+                  moduleMaterials.filter(
+                    (material) =>
+                      completedMaterials.includes(
+                        material.id
+                      )
+                  ).length;
 
-              const moduleTotal =
-                moduleMaterials.length;
+                const moduleTotal =
+                  moduleMaterials.length;
 
-              const moduleProgress =
-                moduleTotal
-                  ? Math.round(
-                      (moduleCompleted /
-                        moduleTotal) *
-                        100
-                    )
-                  : 0;
+                const moduleProgress =
+                  isLoggedIn &&
+                  moduleTotal
+                    ? Math.round(
+                        (moduleCompleted /
+                          moduleTotal) *
+                          100
+                      )
+                    : 0;
 
-              return (
+                return (
 
-                <div
-                  className="course-module"
-                  key={module.id}
-                >
+                  <div
+                    className="course-module"
+                    key={module.id}
+                  >
 
-                  {/* MODULE HEADER */}
+                    {/* MODULE HEADER */}
 
-                  <div className="course-module-header">
+                    <div className="course-module-header">
 
-                    <div className="course-module-heading">
+                      <div className="course-module-heading">
 
-                      <div className="course-module-number">
-                        {String(module.number).padStart(
-                          2,
-                          "0"
-                        )}
+                        <div className="course-module-number">
+                          {String(
+                            module.number
+                          ).padStart(
+                            2,
+                            "0"
+                          )}
+                        </div>
+
+                        <div>
+
+                          <span>
+                            Module{" "}
+                            {module.number}
+                          </span>
+
+                          <h3>
+                            {module.title}
+                          </h3>
+
+                          <p>
+                            {module.description}
+                          </p>
+
+                        </div>
+
                       </div>
 
-                      <div>
+                      <div className="course-module-progress">
+
+                        <strong>
+                          {moduleProgress}%
+                        </strong>
 
                         <span>
-                          Module {module.number}
+                          {isLoggedIn
+                            ? moduleCompleted
+                            : 0}
+                          /
+                          {moduleTotal}
                         </span>
-
-                        <h3>
-                          {module.title}
-                        </h3>
-
-                        <p>
-                          {module.description}
-                        </p>
 
                       </div>
 
                     </div>
 
-                    <div className="course-module-progress">
+                    {/* MODULE PROGRESS */}
 
-                      <strong>
-                        {moduleProgress}%
-                      </strong>
+                    <div className="course-module-progress-bar">
 
-                      <span>
-                        {moduleCompleted}/
-                        {moduleTotal}
-                      </span>
+                      <div
+                        className="course-module-progress-fill"
+                        style={{
+                          width:
+                            moduleProgress +
+                            "%",
+                        }}
+                      />
 
                     </div>
 
-                  </div>
+                    {/* MATERIALS */}
 
-                  {/* MODULE PROGRESS */}
+                    {moduleMaterials.length >
+                    0 ? (
 
-                  <div className="course-module-progress-bar">
+                      <div className="course-material-list">
 
-                    <div
-                      className="course-module-progress-fill"
-                      style={{
-                        width:
-                          moduleProgress + "%",
-                      }}
-                    />
+                        {moduleMaterials.map(
+                          (material) => {
 
-                  </div>
+                            const globalIndex =
+                              courseMaterials.findIndex(
+                                (item) =>
+                                  item.id ===
+                                  material.id
+                              );
 
-                  {/* MATERIALS */}
-
-                  {moduleMaterials.length > 0 ? (
-
-                    <div className="course-material-list">
-
-                      {moduleMaterials.map(
-                        (material) => {
-
-                          const globalIndex =
-                            courseMaterials.findIndex(
-                              (item) =>
-                                item.id ===
+                            const isCompleted =
+                              isLoggedIn &&
+                              completedMaterials.includes(
                                 material.id
-                            );
+                              );
 
-                          const isCompleted =
-                            completedMaterials.includes(
-                              material.id
-                            );
+                            const isLocked =
+                              isMaterialLocked(
+                                material
+                              );
 
-                          const isLocked =
-                            isMaterialLocked(
-                              material
-                            );
+                            const materialNumber =
+                              String(
+                                globalIndex + 1
+                              ).padStart(
+                                2,
+                                "0"
+                              );
 
-                          const materialNumber =
-                            String(
-                              globalIndex + 1
-                            ).padStart(
-                              2,
-                              "0"
-                            );
+                            /*
+                            =================================
+                            GUEST MATERIAL
+                            =================================
+                            */
 
-                          /*
-                            --------------------------------
-                            LOCKED MATERIAL
-                            --------------------------------
-                          */
+                            if (!isLoggedIn) {
 
-                          if (isLocked) {
+                              return (
+
+                                <div
+                                  className="course-material-item guest-locked"
+                                  key={material.id}
+                                >
+
+                                  <div className="material-number">
+                                    <LockKeyhole
+                                      size={17}
+                                    />
+                                  </div>
+
+                                  <div className="course-material-content guest-material-content">
+
+                                    <div className="course-material-type">
+                                      {material.type ||
+                                        "Materi"}
+                                    </div>
+
+                                    <div className="guest-material-blur">
+
+                                      <h3>
+                                        {material.title}
+                                      </h3>
+
+                                      <p>
+                                        {
+                                          material.description
+                                        }
+                                      </p>
+
+                                    </div>
+
+                                    <span>
+                                      <Clock3
+                                        size={13}
+                                      />
+
+                                      {
+                                        material.duration
+                                      }
+                                    </span>
+
+                                  </div>
+
+                                  <div className="course-material-login">
+
+                                    <button
+                                      type="button"
+                                      onClick={
+                                        handleLogin
+                                      }
+                                    >
+                                      <LockKeyhole
+                                        size={15}
+                                      />
+
+                                      Login untuk
+                                      membuka
+                                    </button>
+
+                                  </div>
+
+                                </div>
+
+                              );
+                            }
+
+                            /*
+                            =================================
+                            LOGGED IN - LOCKED MATERIAL
+                            =================================
+                            */
+
+                            if (isLocked) {
+
+                              return (
+
+                                <div
+                                  className="course-material-item locked"
+                                  key={material.id}
+                                  aria-disabled="true"
+                                >
+
+                                  <div className="material-number">
+
+                                    <LockKeyhole
+                                      size={17}
+                                    />
+
+                                  </div>
+
+                                  <div className="course-material-content">
+
+                                    <div className="course-material-type">
+                                      {material.type ||
+                                        "Materi"}
+                                    </div>
+
+                                    <h3>
+                                      {material.title}
+                                    </h3>
+
+                                    <p>
+                                      {
+                                        material.description
+                                      }
+                                    </p>
+
+                                    <span>
+
+                                      <Clock3
+                                        size={13}
+                                      />
+
+                                      {
+                                        material.duration
+                                      }
+
+                                    </span>
+
+                                  </div>
+
+                                  <div className="course-material-arrow locked-arrow">
+
+                                    <LockKeyhole
+                                      size={17}
+                                    />
+
+                                  </div>
+
+                                </div>
+
+                              );
+
+                            }
+
+                            /*
+                            =================================
+                            LOGGED IN - OPEN MATERIAL
+                            =================================
+                            */
+
                             return (
 
-                              <div
-                                className="course-material-item locked"
+                              <Link
+                                to={
+                                  "/material/" +
+                                  material.id
+                                }
+                                className={
+                                  "course-material-item " +
+                                  (isCompleted
+                                    ? "completed"
+                                    : "")
+                                }
                                 key={material.id}
-                                aria-disabled="true"
                               >
 
                                 <div className="material-number">
 
-                                  <LockKeyhole
-                                    size={17}
-                                  />
+                                  {isCompleted ? (
+
+                                    <CheckCircle2
+                                      size={18}
+                                    />
+
+                                  ) : (
+
+                                    materialNumber
+
+                                  )}
 
                                 </div>
 
@@ -475,124 +697,46 @@ function CourseDetail() {
 
                                 </div>
 
-                                <div className="course-material-arrow locked-arrow">
+                                <div className="course-material-arrow">
 
-                                  <LockKeyhole
-                                    size={17}
-                                  />
-
-                                </div>
-
-                              </div>
-                            );
-                          }
-
-                          /*
-                            --------------------------------
-                            OPEN MATERIAL
-                            --------------------------------
-                          */
-
-                          return (
-
-                            <Link
-                              to={
-                                "/material/" +
-                                material.id
-                              }
-                              className={
-                                "course-material-item " +
-                                (
-                                  isCompleted
-                                    ? "completed"
-                                    : ""
-                                )
-                              }
-                              key={material.id}
-                            >
-
-                              <div className="material-number">
-
-                                {isCompleted ? (
-
-                                  <CheckCircle2
+                                  <ArrowRight
                                     size={18}
                                   />
 
-                                ) : (
-
-                                  materialNumber
-
-                                )}
-
-                              </div>
-
-                              <div className="course-material-content">
-
-                                <div className="course-material-type">
-                                  {material.type ||
-                                    "Materi"}
                                 </div>
 
-                                <h3>
-                                  {material.title}
-                                </h3>
+                              </Link>
 
-                                <p>
-                                  {
-                                    material.description
-                                  }
-                                </p>
+                            );
 
-                                <span>
+                          }
+                        )}
 
-                                  <Clock3
-                                    size={13}
-                                  />
+                      </div>
 
-                                  {
-                                    material.duration
-                                  }
+                    ) : (
 
-                                </span>
+                      <div className="course-module-empty">
 
-                              </div>
+                        <BookOpen
+                          size={20}
+                        />
 
-                              <div className="course-material-arrow">
+                        <span>
+                          Materi untuk module
+                          ini belum tersedia.
+                        </span>
 
-                                <ArrowRight
-                                  size={18}
-                                />
+                      </div>
 
-                              </div>
+                    )}
 
-                            </Link>
-                          );
-                        }
-                      )}
+                  </div>
 
-                    </div>
+                );
 
-                  ) : (
-
-                    <div className="course-module-empty">
-
-                      <BookOpen
-                        size={20}
-                      />
-
-                      <span>
-                        Materi untuk module ini
-                        belum tersedia.
-                      </span>
-
-                    </div>
-
-                  )}
-
-                </div>
-              );
-            })}
+              }
+            )}
 
           </div>
 
@@ -607,8 +751,8 @@ function CourseDetail() {
             </h3>
 
             <p>
-              Struktur pembelajaran untuk mata kuliah
-              ini belum tersedia.
+              Struktur pembelajaran untuk
+              mata kuliah ini belum tersedia.
             </p>
 
           </div>

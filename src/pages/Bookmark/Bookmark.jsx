@@ -7,6 +7,7 @@ import {
   ArrowRight,
   CheckCircle2,
   LockKeyhole,
+  XCircle,
 } from "lucide-react";
 
 import materials from "../../data/materials";
@@ -18,8 +19,40 @@ import useProgress from "../../hooks/useProgress";
 import "./Bookmark.css";
 
 function BookmarkPage() {
-  const { bookmarks } = useBookmark();
-  const { completedMaterials } = useProgress();
+  const {
+    bookmarks,
+    loading: bookmarkLoading,
+    error: bookmarkError,
+  } = useBookmark();
+
+  const {
+    completedMaterials,
+    loading: progressLoading,
+    error: progressError,
+  } = useProgress();
+
+  const learningDataLoading =
+    bookmarkLoading || progressLoading;
+
+  const learningError =
+    bookmarkError || progressError;
+
+  if (learningDataLoading) {
+    return (
+      <div className="bookmark-page">
+        <div className="bookmark-loading-state">
+          <div className="bookmark-loading-spinner" />
+
+          <div>
+            <h2>Memuat bookmark...</h2>
+            <p>
+              Data bookmark dan progress sedang disiapkan.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const bookmarkedMaterials = materials.filter(
     (material) => bookmarks.includes(material.id)
@@ -37,10 +70,9 @@ function BookmarkPage() {
       (item) => item.courseId === material.courseId
     );
 
-    const currentIndex =
-      courseMaterials.findIndex(
-        (item) => item.id === material.id
-      );
+    const currentIndex = courseMaterials.findIndex(
+      (item) => item.id === material.id
+    );
 
     if (currentIndex <= 0) {
       return false;
@@ -68,6 +100,22 @@ function BookmarkPage() {
           kapan saja.
         </p>
       </div>
+
+      {learningError && (
+        <div className="bookmark-error-state">
+          <div className="bookmark-error-icon">
+            <XCircle size={18} />
+          </div>
+
+          <div>
+            <strong>
+              Data bookmark belum dapat dimuat
+            </strong>
+
+            <p>{learningError}</p>
+          </div>
+        </div>
+      )}
 
       {bookmarkedMaterials.length > 0 ? (
         <div className="bookmark-list">

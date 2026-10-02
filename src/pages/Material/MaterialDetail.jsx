@@ -69,16 +69,22 @@ function MaterialDetail() {
   const {
     markCompleted,
     isCompleted,
+    loading: progressLoading,
+    error: progressError,
   } = useProgress();
 
   const {
     toggle,
     isBookmarked,
+    loading: bookmarkLoading,
+    error: bookmarkError,
   } = useBookmark();
 
   const {
     getScore,
     saveScore,
+    loading: quizLoading,
+    error: quizError,
   } = useQuiz();
 
   /*
@@ -99,36 +105,6 @@ function MaterialDetail() {
 
     return () => unsubscribe();
   }, []);
-
-  /*
-  |--------------------------------------------------------------------------
-  | PROTECT MATERIAL PAGE
-  |--------------------------------------------------------------------------
-  |
-  | Guest tidak diperbolehkan masuk ke halaman
-  | materi.
-  |
-  */
-
-  useEffect(() => {
-    if (authLoading) {
-      return;
-    }
-
-    if (!currentUser) {
-      navigate("/login", {
-        replace: true,
-        state: {
-          from: "/material/" + id,
-        },
-      });
-    }
-  }, [
-    currentUser,
-    authLoading,
-    navigate,
-    id,
-  ]);
 
   /*
   |--------------------------------------------------------------------------
@@ -281,11 +257,31 @@ function MaterialDetail() {
 
   /*
   |--------------------------------------------------------------------------
+  | RETRY STATE
+  |--------------------------------------------------------------------------
+  */
+
+  const [
+    isRetrying,
+    setIsRetrying,
+  ] = useState(false);
+
+  /*
+  |--------------------------------------------------------------------------
   | LOAD SAVED QUIZ SCORE
   |--------------------------------------------------------------------------
   */
 
   useEffect(() => {
+    /*
+     * Jangan load score lama ketika user
+     * sedang menjalankan attempt retry baru.
+     */
+
+    if (isRetrying) {
+      return;
+    }
+
     if (
       !currentUser ||
       !material ||
@@ -309,6 +305,7 @@ function MaterialDetail() {
     material,
     quiz,
     getScore,
+    isRetrying,
   ]);
 
   /*
@@ -322,6 +319,7 @@ function MaterialDetail() {
     setSelectedAnswer(null);
     setSelectedAnswers({});
     setQuizSubmitted(false);
+    setIsRetrying(false);
   }, [id]);
 
   /*
@@ -384,16 +382,6 @@ function MaterialDetail() {
         </div>
       </div>
     );
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | GUEST
-  |--------------------------------------------------------------------------
-  */
-
-  if (!currentUser) {
-    return null;
   }
 
   /*
@@ -462,6 +450,22 @@ function MaterialDetail() {
 
   /*
   |--------------------------------------------------------------------------
+  | LEARNING DATA STATE
+  |--------------------------------------------------------------------------
+  */
+
+  const learningDataLoading =
+    progressLoading ||
+    bookmarkLoading ||
+    quizLoading;
+
+  const learningError =
+    progressError ||
+    bookmarkError ||
+    quizError;
+
+  /*
+  |--------------------------------------------------------------------------
   | MATERIAL STATUS
   |--------------------------------------------------------------------------
   */
@@ -479,10 +483,12 @@ function MaterialDetail() {
   */
 
   const hasPassedQuiz =
-    !quiz || quizScore === 100;
+    !quiz ||
+    quizScore === 100;
 
   const canComplete =
-    !quiz || hasPassedQuiz;
+    !quiz ||
+    hasPassedQuiz;
 
   /*
   |--------------------------------------------------------------------------
@@ -628,7 +634,6 @@ function MaterialDetail() {
 
     return (
       <div className="material-code-wrapper">
-
         {title && (
           <div className="material-code-title">
             <span>
@@ -646,7 +651,6 @@ function MaterialDetail() {
             {code}
           </code>
         </pre>
-
       </div>
     );
   };
@@ -670,7 +674,6 @@ function MaterialDetail() {
     ) {
       return (
         <div className="material-quick-check">
-
           <div className="material-quick-check-header">
             <HelpCircle size={20} />
 
@@ -682,14 +685,12 @@ function MaterialDetail() {
           <p>
             {quickCheck}
           </p>
-
         </div>
       );
     }
 
     return (
       <div className="material-quick-check">
-
         <div className="material-quick-check-header">
           <HelpCircle size={20} />
 
@@ -710,7 +711,6 @@ function MaterialDetail() {
           quickCheck.options
         ) && (
           <div className="quick-check-options">
-
             {quickCheck.options.map(
               (
                 option,
@@ -730,10 +730,8 @@ function MaterialDetail() {
                 </div>
               )
             )}
-
           </div>
         )}
-
       </div>
     );
   };
@@ -768,7 +766,6 @@ function MaterialDetail() {
         className="material-section"
         key={index}
       >
-
         <h2>
           {renderSafeText(
             sectionTitle
@@ -787,7 +784,6 @@ function MaterialDetail() {
           section.items
         ) && (
           <ul className="material-list">
-
             {section.items.map(
               (
                 item,
@@ -802,7 +798,6 @@ function MaterialDetail() {
                 </li>
               )
             )}
-
           </ul>
         )}
 
@@ -810,7 +805,6 @@ function MaterialDetail() {
           renderCodeBlock(
             section.code
           )}
-
       </section>
     );
   };
@@ -854,6 +848,10 @@ function MaterialDetail() {
   */
 
   const handleBookmark = () => {
+    if (!currentUser) {
+      return;
+    }
+
     toggle(material.id);
   };
 
@@ -900,7 +898,9 @@ function MaterialDetail() {
       updatedAnswers
     );
 
-    setQuizSubmitted(true);
+    setQuizSubmitted(
+      true
+    );
 
     if (!isLastQuestion) {
       return;
@@ -939,6 +939,10 @@ function MaterialDetail() {
           100
       );
 
+    /*
+     * Simpan score terbaru.
+     */
+
     setQuizScore(
       finalScore
     );
@@ -947,6 +951,12 @@ function MaterialDetail() {
       material.id,
       finalScore
     );
+
+    /*
+     * Attempt baru sudah selesai.
+     */
+
+    setIsRetrying(false);
   };
 
   /*
@@ -1009,7 +1019,9 @@ function MaterialDetail() {
         ] ?? null
       );
 
-      setQuizSubmitted(false);
+      setQuizSubmitted(
+        false
+      );
     };
 
   /*
@@ -1019,10 +1031,16 @@ function MaterialDetail() {
   */
 
   const handleRetryQuiz = () => {
+    setIsRetrying(true);
+
     setCurrentQuestion(0);
+
     setSelectedAnswer(null);
+
     setSelectedAnswers({});
+
     setQuizSubmitted(false);
+
     setQuizScore(null);
   };
 
@@ -1073,11 +1091,9 @@ function MaterialDetail() {
 
   return (
     <div className="material-detail-page">
-
       {/* TOP NAVIGATION */}
 
       <div className="material-topbar">
-
         <button
           type="button"
           className="material-back-link"
@@ -1096,7 +1112,6 @@ function MaterialDetail() {
         </button>
 
         <div className="material-top-actions">
-
           <button
             type="button"
             className={
@@ -1109,6 +1124,10 @@ function MaterialDetail() {
             }
             onClick={
               handleBookmark
+            }
+            disabled={
+              !currentUser ||
+              bookmarkLoading
             }
             aria-label={
               bookmarked
@@ -1126,19 +1145,27 @@ function MaterialDetail() {
               />
             )}
           </button>
-
         </div>
-
       </div>
+
+      {/* LEARNING DATA ERROR */}
+
+      {learningError && (
+        <div className="material-learning-error">
+          <HelpCircle size={17} />
+
+          <span>
+            {learningError}
+          </span>
+        </div>
+      )}
 
       {/* MAIN LAYOUT */}
 
       <div className="material-layout">
-
         {/* SIDEBAR */}
 
         <aside className="material-sidebar">
-
           <div className="material-sidebar-header">
             <span>
               {course.title}
@@ -1146,19 +1173,18 @@ function MaterialDetail() {
           </div>
 
           <div className="material-sidebar-list">
-
             {courseMaterials.map(
               (
                 item,
                 index
               ) => {
-
                 const itemCompleted =
                   isCompleted(
                     item.id
                   );
 
                 const locked =
+                  !!currentUser &&
                   index > 0 &&
                   !isCompleted(
                     courseMaterials[
@@ -1183,7 +1209,6 @@ function MaterialDetail() {
                         )
                       }
                     >
-
                       <div className="material-sidebar-number">
                         {index + 1}
                       </div>
@@ -1197,7 +1222,6 @@ function MaterialDetail() {
                       <LockKeyhole
                         size={16}
                       />
-
                     </div>
                   );
                 }
@@ -1218,9 +1242,7 @@ function MaterialDetail() {
                       )
                     }
                   >
-
                     <div className="material-sidebar-number">
-
                       {itemCompleted ? (
                         <Check
                           size={15}
@@ -1228,15 +1250,12 @@ function MaterialDetail() {
                       ) : (
                         index + 1
                       )}
-
                     </div>
 
                     <div className="material-sidebar-info">
-
                       <span>
                         {item.title}
                       </span>
-
                     </div>
 
                     {itemCompleted && (
@@ -1244,26 +1263,20 @@ function MaterialDetail() {
                         size={16}
                       />
                     )}
-
                   </Link>
                 );
               }
             )}
-
           </div>
-
         </aside>
 
         {/* CONTENT */}
 
         <main className="material-content">
-
           {/* MATERIAL HEADER */}
 
           <div className="material-header">
-
             <div className="material-breadcrumb">
-
               <span>
                 Semester{" "}
                 {course.semester}
@@ -1276,11 +1289,9 @@ function MaterialDetail() {
               <span>
                 {course.title}
               </span>
-
             </div>
 
             <div className="material-type-row">
-
               {material.type && (
                 <span className="material-type">
                   {material.type}
@@ -1292,7 +1303,6 @@ function MaterialDetail() {
                   {material.duration}
                 </span>
               )}
-
             </div>
 
             <h1>
@@ -1306,7 +1316,6 @@ function MaterialDetail() {
             )}
 
             <div className="material-progress-info">
-
               <span>
                 Materi{" "}
                 {currentIndex + 1}{" "}
@@ -1316,24 +1325,19 @@ function MaterialDetail() {
 
               {completed && (
                 <span className="material-completed-label">
-
                   <CheckCircle2
                     size={16}
                   />
 
                   Selesai
-
                 </span>
               )}
-
             </div>
-
           </div>
 
           {/* MATERIAL BODY */}
 
           <div className="material-body">
-
             {Array.isArray(
               material.sections
             ) &&
@@ -1357,451 +1361,421 @@ function MaterialDetail() {
               renderQuickCheck(
                 material.quickCheck
               )}
-
           </div>
 
           {/* QUIZ */}
 
           {quiz && (
             <section className="material-quiz">
+              {quizLoading ? (
+                <div className="material-quiz-loading">
+                  <div className="material-loading-spinner" />
 
-              <div className="material-quiz-header">
-
-                <div>
-
-                  <div className="material-quiz-label">
-
-                    <HelpCircle
-                      size={20}
-                    />
-
-                    <span>
-                      Quiz Materi
-                    </span>
-
-                  </div>
-
-                  <h2>
-                    Uji pemahaman kamu
-                  </h2>
-
-                  <p>
-                    Jawab semua
-                    pertanyaan untuk
-                    menyelesaikan
-                    materi ini.
-                  </p>
-
+                  <span>
+                    Memuat data quiz...
+                  </span>
                 </div>
+              ) : quizError ? (
+                <div className="material-quiz-error">
+                  <HelpCircle
+                    size={20}
+                  />
 
-                {quizScore !==
-                  null && (
-                  <div className="material-quiz-score">
-
-                    <span>
-                      Nilai
-                    </span>
-
+                  <div>
                     <strong>
-                      {quizScore}
+                      Quiz tidak dapat dimuat
                     </strong>
 
+                    <p>
+                      {quizError}
+                    </p>
                   </div>
-                )}
-
-              </div>
-
-              {/* QUIZ CONTENT */}
-
-              <div className="material-quiz-content">
-
-                {question && (
-                  <>
-
-                    <div className="material-quiz-progress">
-
-                      <span>
-                        Pertanyaan{" "}
-                        {currentQuestion +
-                          1}{" "}
-                        dari{" "}
-                        {totalQuestions}
-                      </span>
-
-                      <div className="material-quiz-progress-bar">
-
-                        <div
-                          style={{
-                            width:
-                              (
-                                (
-                                  currentQuestion +
-                                  1
-                                ) /
-                                totalQuestions
-                              ) *
-                                100 +
-                              "%",
-                          }}
+                </div>
+              ) : (
+                <>
+                  <div className="material-quiz-header">
+                    <div>
+                      <div className="material-quiz-label">
+                        <HelpCircle
+                          size={20}
                         />
 
+                        <span>
+                          Quiz Materi
+                        </span>
                       </div>
 
+                      <h2>
+                        Uji pemahaman kamu
+                      </h2>
+
+                      <p>
+                        Jawab semua
+                        pertanyaan untuk
+                        menyelesaikan
+                        materi ini.
+                      </p>
                     </div>
 
-                    <div className="material-question">
+                    {quizScore !==
+                      null && (
+                      <div className="material-quiz-score">
+                        <span>
+                          Nilai
+                        </span>
 
-                      <h3>
-                        {
-                          question.question
-                        }
-                      </h3>
-
-                      <div className="material-options">
-
-                        {question.options.map(
-                          (
-                            option,
-                            optionIndex
-                          ) => {
-
-                            const isSelected =
-                              selectedAnswer ===
-                              option;
-
-                            const isCorrect =
-                              String(
-                                option
-                              ) ===
-                              String(
-                                question.answer
-                              );
-
-                            let optionClass =
-                              "material-option";
-
-                            if (
-                              isSelected
-                            ) {
-                              optionClass +=
-                                " selected";
-                            }
-
-                            if (
-                              quizSubmitted &&
-                              isCorrect
-                            ) {
-                              optionClass +=
-                                " correct";
-                            }
-
-                            if (
-                              quizSubmitted &&
-                              isSelected &&
-                              !isCorrect
-                            ) {
-                              optionClass +=
-                                " incorrect";
-                            }
-
-                            return (
-                              <button
-                                type="button"
-                                key={
-                                  optionIndex
-                                }
-                                className={
-                                  optionClass
-                                }
-                                onClick={() =>
-                                  handleAnswer(
-                                    option
-                                  )
-                                }
-                                disabled={
-                                  quizSubmitted
-                                }
-                              >
-
-                                <span className="material-option-letter">
-
-                                  {String.fromCharCode(
-                                    65 +
-                                      optionIndex
-                                  )}
-
-                                </span>
-
-                                <span className="material-option-text">
-                                  {
-                                    option
-                                  }
-                                </span>
-
-                                {quizSubmitted &&
-                                  isCorrect && (
-                                    <CheckCircle2
-                                      size={18}
-                                    />
-                                  )}
-
-                              </button>
-                            );
-                          }
-                        )}
-
-                      </div>
-
-                    </div>
-
-                    {/* FEEDBACK */}
-
-                    {quizSubmitted && (
-                      <div
-                        className={
-                          "material-quiz-feedback " +
-                          (
-                            currentAnswerCorrect
-                              ? "correct"
-                              : "incorrect"
-                          )
-                        }
-                      >
-
-                        {currentAnswerCorrect ? (
-                          <>
-
-                            <CheckCircle2
-                              size={20}
-                            />
-
-                            <div>
-
-                              <strong>
-                                Jawaban
-                                benar!
-                              </strong>
-
-                              <p>
-                                Jawaban
-                                kamu
-                                tepat.
-                              </p>
-
-                            </div>
-
-                          </>
-                        ) : (
-                          <>
-
-                            <HelpCircle
-                              size={20}
-                            />
-
-                            <div>
-
-                              <strong>
-                                Jawaban
-                                belum
-                                tepat.
-                              </strong>
-
-                              <p>
-                                Jawaban
-                                yang
-                                benar
-                                adalah:{" "}
-                                <strong>
-                                  {
-                                    question.answer
-                                  }
-                                </strong>
-                              </p>
-
-                            </div>
-
-                          </>
-                        )}
-
+                        <strong>
+                          {quizScore}
+                        </strong>
                       </div>
                     )}
+                  </div>
 
-                    {/* FINAL SCORE */}
+                  {/* QUIZ CONTENT */}
 
-                    {quizSubmitted &&
-                      isLastQuestion &&
-                      quizScore !==
-                        null && (
-                        <div className="material-quiz-final">
+                  <div className="material-quiz-content">
+                    {question && (
+                      <>
+                        <div className="material-quiz-progress">
+                          <span>
+                            Pertanyaan{" "}
+                            {currentQuestion +
+                              1}{" "}
+                            dari{" "}
+                            {totalQuestions}
+                          </span>
 
-                          <div>
-
-                            <span>
-                              Quiz
-                              selesai
-                            </span>
-
-                            <strong>
-                              Nilai
-                              kamu:{" "}
-                              {
-                                quizScore
-                              }
-                            </strong>
-
+                          <div className="material-quiz-progress-bar">
+                            <div
+                              style={{
+                                width:
+                                  (
+                                    (
+                                      currentQuestion +
+                                      1
+                                    ) /
+                                    totalQuestions
+                                  ) *
+                                    100 +
+                                  "%",
+                              }}
+                            />
                           </div>
+                        </div>
 
-                          {quizScore ===
-                          100 ? (
-                            <div className="material-quiz-pass">
+                        <div className="material-question">
+                          <h3>
+                            {
+                              question.question
+                            }
+                          </h3>
 
-                              <CheckCircle2
-                                size={20}
-                              />
+                          <div className="material-options">
+                            {question.options.map(
+                              (
+                                option,
+                                optionIndex
+                              ) => {
+                                const isSelected =
+                                  selectedAnswer ===
+                                  option;
 
-                              <span>
-                                Kamu
-                                lulus
-                                quiz!
-                                Materi
-                                berikutnya
-                                sudah
-                                terbuka.
-                              </span>
+                                const isCorrect =
+                                  String(
+                                    option
+                                  ) ===
+                                  String(
+                                    question.answer
+                                  );
 
-                            </div>
-                          ) : (
-                            <div className="material-quiz-fail">
+                                let optionClass =
+                                  "material-option";
 
-                              <RotateCcw
-                                size={20}
-                              />
+                                if (
+                                  isSelected
+                                ) {
+                                  optionClass +=
+                                    " selected";
+                                }
 
-                              <span>
-                                Nilai
-                                harus
-                                100
-                                untuk
-                                membuka
-                                materi
-                                berikutnya.
-                              </span>
+                                if (
+                                  quizSubmitted &&
+                                  isCorrect
+                                ) {
+                                  optionClass +=
+                                    " correct";
+                                }
 
+                                if (
+                                  quizSubmitted &&
+                                  isSelected &&
+                                  !isCorrect
+                                ) {
+                                  optionClass +=
+                                    " incorrect";
+                                }
+
+                                return (
+                                  <button
+                                    type="button"
+                                    key={
+                                      optionIndex
+                                    }
+                                    className={
+                                      optionClass
+                                    }
+                                    onClick={() =>
+                                      handleAnswer(
+                                        option
+                                      )
+                                    }
+                                    disabled={
+                                      quizSubmitted
+                                    }
+                                  >
+                                    <span className="material-option-letter">
+                                      {String.fromCharCode(
+                                        65 +
+                                          optionIndex
+                                      )}
+                                    </span>
+
+                                    <span className="material-option-text">
+                                      {
+                                        option
+                                      }
+                                    </span>
+
+                                    {quizSubmitted &&
+                                      isCorrect && (
+                                        <CheckCircle2
+                                          size={
+                                            18
+                                          }
+                                        />
+                                      )}
+                                  </button>
+                                );
+                              }
+                            )}
+                          </div>
+                        </div>
+
+                        {/* FEEDBACK */}
+
+                        {quizSubmitted && (
+                          <div
+                            className={
+                              "material-quiz-feedback " +
+                              (
+                                currentAnswerCorrect
+                                  ? "correct"
+                                  : "incorrect"
+                              )
+                            }
+                          >
+                            {currentAnswerCorrect ? (
+                              <>
+                                <CheckCircle2
+                                  size={20}
+                                />
+
+                                <div>
+                                  <strong>
+                                    Jawaban
+                                    benar!
+                                  </strong>
+
+                                  <p>
+                                    Jawaban
+                                    kamu
+                                    tepat.
+                                  </p>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <HelpCircle
+                                  size={20}
+                                />
+
+                                <div>
+                                  <strong>
+                                    Jawaban
+                                    belum
+                                    tepat.
+                                  </strong>
+
+                                  <p>
+                                    Jawaban
+                                    yang
+                                    benar
+                                    adalah:{" "}
+                                    <strong>
+                                      {
+                                        question.answer
+                                      }
+                                    </strong>
+                                  </p>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+
+                        {/* FINAL SCORE */}
+
+                        {quizSubmitted &&
+                          isLastQuestion &&
+                          quizScore !==
+                            null && (
+                            <div className="material-quiz-final">
+                              <div>
+                                <span>
+                                  Quiz
+                                  selesai
+                                </span>
+
+                                <strong>
+                                  Nilai
+                                  kamu:{" "}
+                                  {
+                                    quizScore
+                                  }
+                                </strong>
+                              </div>
+
+                              {quizScore ===
+                              100 ? (
+                                <div className="material-quiz-pass">
+                                  <CheckCircle2
+                                    size={
+                                      20
+                                    }
+                                  />
+
+                                  <span>
+                                    Kamu
+                                    lulus
+                                    quiz!
+                                    Materi
+                                    berikutnya
+                                    sudah
+                                    terbuka.
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="material-quiz-fail">
+                                  <RotateCcw
+                                    size={
+                                      20
+                                    }
+                                  />
+
+                                  <span>
+                                    Nilai
+                                    harus
+                                    100
+                                    untuk
+                                    membuka
+                                    materi
+                                    berikutnya.
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           )}
 
+                        {/* QUIZ CONTROLS */}
+
+                        <div className="material-quiz-controls">
+                          <button
+                            type="button"
+                            className="material-secondary-button"
+                            onClick={
+                              handlePreviousQuestion
+                            }
+                            disabled={
+                              currentQuestion ===
+                              0
+                            }
+                          >
+                            <ArrowLeft
+                              size={18}
+                            />
+
+                            Sebelumnya
+                          </button>
+
+                          {!quizSubmitted ? (
+                            <button
+                              type="button"
+                              className="material-primary-button"
+                              onClick={
+                                handleSubmitAnswer
+                              }
+                              disabled={
+                                selectedAnswer ===
+                                null
+                              }
+                            >
+                              Jawab
+
+                              <Check
+                                size={18}
+                              />
+                            </button>
+                          ) : !isLastQuestion ? (
+                            <button
+                              type="button"
+                              className="material-primary-button"
+                              onClick={
+                                handleNextQuestion
+                              }
+                            >
+                              Berikutnya
+
+                              <ArrowRight
+                                size={18}
+                              />
+                            </button>
+                          ) : quizScore !==
+                            100 ? (
+                            <button
+                              type="button"
+                              className="material-primary-button"
+                              onClick={
+                                handleRetryQuiz
+                              }
+                            >
+                              <RotateCcw
+                                size={18}
+                              />
+
+                              Ulangi Quiz
+                            </button>
+                          ) : null}
                         </div>
-                      )}
-
-                    {/* QUIZ CONTROLS */}
-
-                    <div className="material-quiz-controls">
-
-                      <button
-                        type="button"
-                        className="material-secondary-button"
-                        onClick={
-                          handlePreviousQuestion
-                        }
-                        disabled={
-                          currentQuestion ===
-                          0
-                        }
-                      >
-
-                        <ArrowLeft
-                          size={18}
-                        />
-
-                        Sebelumnya
-
-                      </button>
-
-                      {!quizSubmitted ? (
-
-                        <button
-                          type="button"
-                          className="material-primary-button"
-                          onClick={
-                            handleSubmitAnswer
-                          }
-                          disabled={
-                            selectedAnswer ===
-                            null
-                          }
-                        >
-                          Jawab
-
-                          <Check
-                            size={18}
-                          />
-                        </button>
-
-                      ) : !isLastQuestion ? (
-
-                        <button
-                          type="button"
-                          className="material-primary-button"
-                          onClick={
-                            handleNextQuestion
-                          }
-                        >
-                          Berikutnya
-
-                          <ArrowRight
-                            size={18}
-                          />
-                        </button>
-
-                      ) : quizScore !==
-                        100 ? (
-
-                        <button
-                          type="button"
-                          className="material-primary-button"
-                          onClick={
-                            handleRetryQuiz
-                          }
-                        >
-
-                          <RotateCcw
-                            size={18}
-                          />
-
-                          Ulangi Quiz
-
-                        </button>
-
-                      ) : null}
-
-                    </div>
-
-                  </>
-                )}
-
-              </div>
-
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
             </section>
           )}
 
           {/* COMPLETE SECTION */}
 
           <div className="material-complete-section">
-
             {completed ? (
-
               <div className="material-completed-box">
-
                 <div className="material-completed-icon">
-
                   <CheckCircle2
                     size={24}
                   />
-
                 </div>
 
                 <div>
-
                   <strong>
                     Materi sudah selesai
                   </strong>
@@ -1811,17 +1785,11 @@ function MaterialDetail() {
                     menyelesaikan materi
                     ini.
                   </p>
-
                 </div>
-
               </div>
-
             ) : (
-
               <div className="material-complete-box">
-
                 <div>
-
                   <h3>
                     Selesaikan materi
                   </h3>
@@ -1836,7 +1804,6 @@ function MaterialDetail() {
                   {quiz &&
                     !hasPassedQuiz && (
                       <div className="material-lock-notice">
-
                         <LockKeyhole
                           size={17}
                         />
@@ -1846,10 +1813,8 @@ function MaterialDetail() {
                           dengan nilai 100
                           terlebih dahulu.
                         </span>
-
                       </div>
                     )}
-
                 </div>
 
                 <button
@@ -1859,27 +1824,23 @@ function MaterialDetail() {
                     handleComplete
                   }
                   disabled={
-                    !canComplete
+                    !canComplete ||
+                    learningDataLoading
                   }
                 >
-
                   <CheckCircle2
                     size={18}
                   />
 
                   Tandai Selesai
-
                 </button>
-
               </div>
             )}
-
           </div>
 
           {/* MATERIAL NAVIGATION */}
 
           <div className="material-navigation">
-
             <button
               type="button"
               className="material-navigation-button previous"
@@ -1890,13 +1851,11 @@ function MaterialDetail() {
                 !previousMaterial
               }
             >
-
               <ArrowLeft
                 size={18}
               />
 
               <div>
-
                 <span>
                   Sebelumnya
                 </span>
@@ -1906,9 +1865,7 @@ function MaterialDetail() {
                     ? previousMaterial.title
                     : "Tidak ada materi"}
                 </strong>
-
               </div>
-
             </button>
 
             <button
@@ -1922,9 +1879,7 @@ function MaterialDetail() {
                 !completed
               }
             >
-
               <div>
-
                 <span>
                   Berikutnya
                 </span>
@@ -1934,21 +1889,15 @@ function MaterialDetail() {
                     ? nextMaterial.title
                     : "Materi terakhir"}
                 </strong>
-
               </div>
 
               <ArrowRight
                 size={18}
               />
-
             </button>
-
           </div>
-
         </main>
-
       </div>
-
     </div>
   );
 }

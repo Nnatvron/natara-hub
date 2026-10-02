@@ -6,10 +6,7 @@ import {
 
 import { db } from "./config";
 
-export async function createUserProfile(
-  user,
-  name
-) {
+export async function createUserProfile(user, name) {
   await setDoc(
     doc(db, "users", user.uid),
     {

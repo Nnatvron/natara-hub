@@ -16,6 +16,7 @@ import {
 
 import {
   loginUser,
+  loginWithGoogle,
   resetPassword,
 } from "../../firebase/auth";
 
@@ -41,8 +42,18 @@ function Login() {
   const [success, setSuccess] = useState("");
 
   const [loading, setLoading] = useState(false);
+
+  const [googleLoading, setGoogleLoading] =
+    useState(false);
+
   const [resetLoading, setResetLoading] =
     useState(false);
+
+  /*
+  |--------------------------------------------------------------------------
+  | LOGIN EMAIL & PASSWORD
+  |--------------------------------------------------------------------------
+  */
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -126,6 +137,87 @@ function Login() {
       setLoading(false);
     }
   };
+
+  /*
+  |--------------------------------------------------------------------------
+  | GOOGLE LOGIN
+  |--------------------------------------------------------------------------
+  */
+
+  const handleGoogleLogin = async () => {
+    setError("");
+    setSuccess("");
+
+    try {
+      setGoogleLoading(true);
+
+      const user = await loginWithGoogle(
+        rememberMe
+      );
+
+      console.log(
+        "Google login berhasil:",
+        user
+      );
+
+      const from =
+        location.state?.from || "/";
+
+      navigate(from, {
+        replace: true,
+      });
+    } catch (error) {
+      console.error(
+        "Google login error:",
+        error
+      );
+
+      switch (error.code) {
+        case "auth/popup-closed-by-user":
+          setError(
+            "Login Google dibatalkan."
+          );
+          break;
+
+        case "auth/popup-blocked":
+          setError(
+            "Popup Google diblokir browser. Izinkan popup untuk melanjutkan."
+          );
+          break;
+
+        case "auth/cancelled-popup-request":
+          setError(
+            "Permintaan login Google dibatalkan."
+          );
+          break;
+
+        case "auth/account-exists-with-different-credential":
+          setError(
+            "Email Google ini sudah terdaftar dengan metode login lain."
+          );
+          break;
+
+        case "auth/network-request-failed":
+          setError(
+            "Koneksi internet bermasalah. Periksa koneksi kamu."
+          );
+          break;
+
+        default:
+          setError(
+            "Login dengan Google gagal. Silakan coba lagi."
+          );
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | FORGOT PASSWORD
+  |--------------------------------------------------------------------------
+  */
 
   const handleForgotPassword = async () => {
     setError("");
@@ -236,7 +328,6 @@ function Login() {
               className="login-form"
               onSubmit={handleSubmit}
             >
-
               <div className="login-field">
                 <label htmlFor="login-email">
                   Email
@@ -256,7 +347,10 @@ function Login() {
                   }}
                   placeholder="nama@email.com"
                   autoComplete="email"
-                  disabled={loading}
+                  disabled={
+                    loading ||
+                    googleLoading
+                  }
                 />
               </div>
 
@@ -284,7 +378,10 @@ function Login() {
                     }}
                     placeholder="Masukkan password"
                     autoComplete="current-password"
-                    disabled={loading}
+                    disabled={
+                      loading ||
+                      googleLoading
+                    }
                   />
 
                   <button
@@ -300,7 +397,10 @@ function Login() {
                         ? "Sembunyikan password"
                         : "Tampilkan password"
                     }
-                    disabled={loading}
+                    disabled={
+                      loading ||
+                      googleLoading
+                    }
                   >
                     {showPassword ? (
                       <EyeOff size={18} />
@@ -312,7 +412,6 @@ function Login() {
               </div>
 
               <div className="login-options">
-
                 <label className="login-remember">
                   <input
                     type="checkbox"
@@ -322,7 +421,10 @@ function Login() {
                         event.target.checked
                       )
                     }
-                    disabled={loading}
+                    disabled={
+                      loading ||
+                      googleLoading
+                    }
                   />
 
                   <span>
@@ -341,11 +443,13 @@ function Login() {
                     setError("");
                     setSuccess("");
                   }}
-                  disabled={loading}
+                  disabled={
+                    loading ||
+                    googleLoading
+                  }
                 >
                   Lupa Password?
                 </button>
-
               </div>
 
               {error && (
@@ -363,7 +467,10 @@ function Login() {
               <button
                 type="submit"
                 className="login-submit"
-                disabled={loading}
+                disabled={
+                  loading ||
+                  googleLoading
+                }
               >
                 {loading ? (
                   <>
@@ -378,8 +485,65 @@ function Login() {
                   "Login"
                 )}
               </button>
-
             </form>
+
+            {/* GOOGLE LOGIN */}
+
+            <div className="login-divider">
+              <span>atau</span>
+            </div>
+
+            <button
+              type="button"
+              className="login-google"
+              onClick={handleGoogleLogin}
+              disabled={
+                loading ||
+                googleLoading
+              }
+            >
+              {googleLoading ? (
+                <>
+                  <Loader2
+                    size={18}
+                    className="login-spinner"
+                  />
+
+                  Menghubungkan Google...
+                </>
+              ) : (
+                <>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="#4285F4"
+                      d="M21.35 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h5.23a4.47 4.47 0 0 1-1.94 2.93v2.43h3.14c1.84-1.69 2.92-4.18 2.92-7.39Z"
+                    />
+
+                    <path
+                      fill="#34A853"
+                      d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.14-2.43c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.72-5.46-4.03H3.3v2.5A9.74 9.74 0 0 0 12 21.75Z"
+                    />
+
+                    <path
+                      fill="#FBBC05"
+                      d="M6.54 13.86A5.85 5.85 0 0 1 6.24 12c0-.64.11-1.26.3-1.86v-2.5H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.36l3.24-2.5Z"
+                    />
+
+                    <path
+                      fill="#EA4335"
+                      d="M12 6.11c1.43 0 2.72.49 3.73 1.45l2.8-2.8C16.84 3.16 14.63 2.25 12 2.25a9.74 9.74 0 0 0-8.7 5.39l3.24 2.5C7.31 7.83 9.46 6.11 12 6.11Z"
+                    />
+                  </svg>
+
+                  Lanjutkan dengan Google
+                </>
+              )}
+            </button>
 
             <div className="login-footer">
               <span>
@@ -406,7 +570,6 @@ function Login() {
             </div>
 
             <div className="login-form">
-
               <div className="login-field">
                 <label htmlFor="reset-email">
                   Email
@@ -485,11 +648,9 @@ function Login() {
 
                 Kembali ke Login
               </button>
-
             </div>
           </>
         )}
-
       </div>
     </div>
   );

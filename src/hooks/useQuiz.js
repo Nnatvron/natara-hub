@@ -1,25 +1,13 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
-  onAuthStateChanged,
-} from "firebase/auth";
-
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/config";
-
 import {
   getQuizScore,
   getQuizScores,
   saveQuizScore,
 } from "../utils/storage";
-
 import materials from "../data/materials";
-
-import {
-  createNotification,
-} from "../utils/notification";
+import { createNotification } from "../utils/notification";
 
 function useQuiz() {
   /*
@@ -28,11 +16,17 @@ function useQuiz() {
   |--------------------------------------------------------------------------
   */
 
-  const [currentUser, setCurrentUser] =
-    useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [scores, setScores] = useState({});
 
-  const [scores, setScores] =
-    useState({});
+  /*
+  |--------------------------------------------------------------------------
+  | UI STATE
+  |--------------------------------------------------------------------------
+  */
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   /*
   |--------------------------------------------------------------------------
@@ -41,19 +35,24 @@ function useQuiz() {
   */
 
   useEffect(() => {
-    const unsubscribe =
-      onAuthStateChanged(
-        auth,
-        (user) => {
+    let mounted = true;
+
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        if (!mounted) return;
+
+        try {
+          setError(null);
           setCurrentUser(user);
 
           /*
            * Guest tidak memiliki
            * nilai quiz.
            */
-
           if (!user) {
             setScores({});
+            setLoading(false);
             return;
           }
 
@@ -61,14 +60,39 @@ function useQuiz() {
            * Ambil nilai quiz berdasarkan
            * akun Firebase yang login.
            */
+          const savedScores = getQuizScores();
 
           setScores(
-            getQuizScores()
+            savedScores && typeof savedScores === "object"
+              ? savedScores
+              : {}
           );
-        }
-      );
 
-    return () => unsubscribe();
+          setLoading(false);
+        } catch (err) {
+          console.error("Quiz load error:", err);
+
+          setScores({});
+          setError("Data quiz tidak dapat dimuat.");
+          setLoading(false);
+        }
+      },
+      (err) => {
+        if (!mounted) return;
+
+        console.error("Auth listener error:", err);
+
+        setCurrentUser(null);
+        setScores({});
+        setError("Terjadi masalah saat memuat akun.");
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
   }, []);
 
   /*
@@ -84,9 +108,21 @@ function useQuiz() {
     }
 
     const refreshScores = () => {
-      setScores(
-        getQuizScores()
-      );
+      try {
+        const savedScores = getQuizScores();
+
+        setScores(
+          savedScores && typeof savedScores === "object"
+            ? savedScores
+            : {}
+        );
+
+        setError(null);
+      } catch (err) {
+        console.error("Quiz refresh error:", err);
+
+        setError("Data quiz tidak dapat diperbarui.");
+      }
     };
 
     window.addEventListener(
@@ -108,68 +144,72 @@ function useQuiz() {
   |--------------------------------------------------------------------------
   */
 
-  const saveScore = (
-    quizId,
-    score
-  ) => {
+  const saveScore = (quizId, score) => {
     /*
      * Guest tidak boleh menyimpan
      * nilai quiz.
      */
-
     if (!auth.currentUser) {
       return;
     }
 
-    const updated =
-      saveQuizScore(
+    try {
+      const updated = saveQuizScore(
         quizId,
         score
       );
 
-    setScores(updated);
-
-    /*
-     * Cari materi terkait quiz.
-     */
-
-    const material =
-      materials.find(
-        (item) =>
-          item.id === quizId
+      setScores(
+        updated && typeof updated === "object"
+          ? updated
+          : {}
       );
 
-    if (!material) {
-      return;
-    }
+      setError(null);
 
-    /*
-     * QUIZ LULUS
-     */
+      /*
+       * Cari materi terkait quiz.
+       */
+      const material = materials.find(
+        (item) => item.id === quizId
+      );
 
-    if (score >= 100) {
+      if (!material) {
+        return;
+      }
+
+      /*
+       * QUIZ LULUS
+       */
+
+      if (score >= 100) {
+        createNotification({
+          id: `quiz-passed-${material.id}`,
+          type: "quiz",
+          title: "Quiz berhasil",
+          message: `Kamu mendapatkan nilai 100 pada quiz ${material.title}.`,
+          link: `/material/${material.id}`,
+        });
+
+        return;
+      }
+
+      /*
+       * QUIZ BELUM LULUS
+       */
+
       createNotification({
-        id: `quiz-passed-${material.id}`,
+        id: `quiz-failed-${material.id}-${score}`,
         type: "quiz",
-        title: "Quiz berhasil",
-        message: `Kamu mendapatkan nilai 100 pada quiz ${material.title}.`,
+        title: "Quiz belum lulus",
+        message: `Nilai kamu ${score}/100. Coba lagi untuk mendapatkan nilai 100.`,
         link: `/material/${material.id}`,
       });
+    } catch (err) {
+      console.error("Save quiz score error:", err);
 
-      return;
+      setError("Nilai quiz tidak dapat disimpan.");
     }
-
-    /*
-     * QUIZ BELUM LULUS
-     */
-
-    createNotification({
-      id: `quiz-failed-${material.id}-${score}`,
-      type: "quiz",
-      title: "Quiz belum lulus",
-      message: `Nilai kamu ${score}/100. Coba lagi untuk mendapatkan nilai 100.`,
-      link: `/material/${material.id}`,
-    });
   };
 
   /*
@@ -178,9 +218,7 @@ function useQuiz() {
   |--------------------------------------------------------------------------
   */
 
-  const getScore = (
-    quizId
-  ) => {
+  const getScore = (quizId) => {
     if (!currentUser) {
       return null;
     }
@@ -200,6 +238,8 @@ function useQuiz() {
   return {
     currentUser,
     scores,
+    loading,
+    error,
     saveScore,
     getScore,
   };

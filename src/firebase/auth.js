@@ -8,22 +8,51 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 
 import { auth } from "./config";
 
 /*
-  Validasi password:
-  - Minimal 6 karakter
-  - Minimal 1 huruf besar
-  - Minimal 1 angka
-  - Minimal 1 simbol
+|--------------------------------------------------------------------------
+| GOOGLE AUTHENTICATION
+|--------------------------------------------------------------------------
 */
-export function validatePassword(password) {
-  const hasMinLength = password.length >= 6;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+const googleProvider =
+  new GoogleAuthProvider();
+
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+});
+
+/*
+|--------------------------------------------------------------------------
+| VALIDASI PASSWORD
+|--------------------------------------------------------------------------
+|
+| - Minimal 6 karakter
+| - Minimal 1 huruf besar
+| - Minimal 1 angka
+| - Minimal 1 simbol
+|
+*/
+
+export function validatePassword(
+  password
+) {
+  const hasMinLength =
+    password.length >= 6;
+
+  const hasUppercase =
+    /[A-Z]/.test(password);
+
+  const hasNumber =
+    /[0-9]/.test(password);
+
+  const hasSymbol =
+    /[^A-Za-z0-9]/.test(password);
 
   return {
     valid:
@@ -31,6 +60,7 @@ export function validatePassword(password) {
       hasUppercase &&
       hasNumber &&
       hasSymbol,
+
     hasMinLength,
     hasUppercase,
     hasNumber,
@@ -39,8 +69,11 @@ export function validatePassword(password) {
 }
 
 /*
-  Register user
+|--------------------------------------------------------------------------
+| REGISTER USER — EMAIL & PASSWORD
+|--------------------------------------------------------------------------
 */
+
 export async function registerUser(
   name,
   email,
@@ -62,7 +95,8 @@ export async function registerUser(
       password
     );
 
-  const user = userCredential.user;
+  const user =
+    userCredential.user;
 
   await updateProfile(user, {
     displayName: name,
@@ -72,10 +106,50 @@ export async function registerUser(
 }
 
 /*
-  Kirim email verifikasi.
+|--------------------------------------------------------------------------
+| GOOGLE LOGIN
+|--------------------------------------------------------------------------
+|
+| Google authentication akan:
+|
+| 1. Membuka pilihan akun Google.
+| 2. Login jika akun NATARA HUB sudah ada.
+| 3. Membuat Firebase user jika akun Google
+|    tersebut belum pernah digunakan.
+|
 */
+
+export async function loginWithGoogle(
+  rememberMe = true
+) {
+  const persistence =
+    rememberMe
+      ? browserLocalPersistence
+      : browserSessionPersistence;
+
+  await setPersistence(
+    auth,
+    persistence
+  );
+
+  const result =
+    await signInWithPopup(
+      auth,
+      googleProvider
+    );
+
+  return result.user;
+}
+
+/*
+|--------------------------------------------------------------------------
+| KIRIM EMAIL VERIFIKASI
+|--------------------------------------------------------------------------
+*/
+
 export async function sendVerificationEmail() {
-  const user = auth.currentUser;
+  const user =
+    auth.currentUser;
 
   if (!user) {
     throw new Error(
@@ -83,14 +157,20 @@ export async function sendVerificationEmail() {
     );
   }
 
-  await sendEmailVerification(user);
+  await sendEmailVerification(
+    user
+  );
 }
 
 /*
-  Cek apakah email sudah diverifikasi.
+|--------------------------------------------------------------------------
+| CEK EMAIL VERIFIKASI
+|--------------------------------------------------------------------------
 */
+
 export async function checkEmailVerification() {
-  const user = auth.currentUser;
+  const user =
+    auth.currentUser;
 
   if (!user) {
     return false;
@@ -98,26 +178,25 @@ export async function checkEmailVerification() {
 
   await user.reload();
 
-  return auth.currentUser.emailVerified;
+  return auth.currentUser
+    .emailVerified;
 }
 
 /*
-  Login user.
-
-  Remember Me aktif:
-  sesi disimpan di browser.
-
-  Remember Me tidak aktif:
-  sesi hanya bertahan selama sesi browser.
+|--------------------------------------------------------------------------
+| LOGIN USER — EMAIL & PASSWORD
+|--------------------------------------------------------------------------
 */
+
 export async function loginUser(
   email,
   password,
   rememberMe = false
 ) {
-  const persistence = rememberMe
-    ? browserLocalPersistence
-    : browserSessionPersistence;
+  const persistence =
+    rememberMe
+      ? browserLocalPersistence
+      : browserSessionPersistence;
 
   await setPersistence(
     auth,
@@ -135,16 +214,24 @@ export async function loginUser(
 }
 
 /*
-  Logout
+|--------------------------------------------------------------------------
+| LOGOUT
+|--------------------------------------------------------------------------
 */
+
 export async function logoutUser() {
   await signOut(auth);
 }
 
 /*
-  Kirim email reset password.
+|--------------------------------------------------------------------------
+| RESET PASSWORD
+|--------------------------------------------------------------------------
 */
-export async function resetPassword(email) {
+
+export async function resetPassword(
+  email
+) {
   await sendPasswordResetEmail(
     auth,
     email

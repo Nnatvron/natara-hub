@@ -34,6 +34,12 @@ function useProgress() {
   const [completedMaterials, setCompletedMaterials] =
     useState([]);
 
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState(null);
+
   /*
   |--------------------------------------------------------------------------
   | FIREBASE AUTH LISTENER
@@ -41,33 +47,88 @@ function useProgress() {
   */
 
   useEffect(() => {
+    let mounted = true;
+
     const unsubscribe =
       onAuthStateChanged(
         auth,
         (user) => {
-          setCurrentUser(user);
-
-          /*
-           * Guest tidak memiliki progress.
-           */
-
-          if (!user) {
-            setCompletedMaterials([]);
+          if (!mounted) {
             return;
           }
 
-          /*
-           * Ambil progress berdasarkan
-           * akun Firebase yang sedang login.
-           */
+          try {
+            setError(null);
+            setCurrentUser(user);
 
-          setCompletedMaterials(
-            getCompletedMaterials()
+            /*
+             * Guest tidak memiliki
+             * progress.
+             */
+
+            if (!user) {
+              setCompletedMaterials([]);
+              setLoading(false);
+              return;
+            }
+
+            /*
+             * Ambil progress berdasarkan
+             * akun Firebase yang sedang login.
+             */
+
+            const savedProgress =
+              getCompletedMaterials();
+
+            setCompletedMaterials(
+              Array.isArray(
+                savedProgress
+              )
+                ? savedProgress
+                : []
+            );
+
+            setLoading(false);
+          } catch (err) {
+            console.error(
+              "Progress load error:",
+              err
+            );
+
+            setCompletedMaterials([]);
+
+            setError(
+              "Progress belajar tidak dapat dimuat."
+            );
+
+            setLoading(false);
+          }
+        },
+        (err) => {
+          if (!mounted) {
+            return;
+          }
+
+          console.error(
+            "Auth listener error:",
+            err
           );
+
+          setCurrentUser(null);
+          setCompletedMaterials([]);
+
+          setError(
+            "Terjadi masalah saat memuat akun."
+          );
+
+          setLoading(false);
         }
       );
 
-    return () => unsubscribe();
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
   }, []);
 
   /*
@@ -83,9 +144,29 @@ function useProgress() {
     }
 
     const refreshProgress = () => {
-      setCompletedMaterials(
-        getCompletedMaterials()
-      );
+      try {
+        const savedProgress =
+          getCompletedMaterials();
+
+        setCompletedMaterials(
+          Array.isArray(
+            savedProgress
+          )
+            ? savedProgress
+            : []
+        );
+
+        setError(null);
+      } catch (err) {
+        console.error(
+          "Progress refresh error:",
+          err
+        );
+
+        setError(
+          "Progress belajar tidak dapat diperbarui."
+        );
+      }
     };
 
     window.addEventListener(
@@ -119,129 +200,144 @@ function useProgress() {
       return;
     }
 
-    const alreadyCompleted =
-      completedMaterials.includes(
-        materialId
-      );
-
-    const updated =
-      markMaterialCompleted(
-        materialId
-      );
-
-    setCompletedMaterials(
-      updated
-    );
-
-    /*
-     * Jika sudah selesai sebelumnya,
-     * jangan buat notifikasi lagi.
-     */
-
-    if (alreadyCompleted) {
-      return;
-    }
-
-    const material =
-      materials.find(
-        (item) =>
-          item.id === materialId
-      );
-
-    if (!material) {
-      return;
-    }
-
-    /*
-     * NOTIFICATION:
-     * Materi selesai.
-     */
-
-    createNotification({
-      id: `material-completed-${material.id}`,
-      type: "material",
-      title: "Materi selesai",
-      message: `Kamu telah menyelesaikan ${material.title}.`,
-      link: `/material/${material.id}`,
-    });
-
-    /*
-     * CARI MATERI DALAM COURSE
-     */
-
-    const courseMaterials =
-      materials.filter(
-        (item) =>
-          item.courseId ===
-          material.courseId
-      );
-
-    const currentIndex =
-      courseMaterials.findIndex(
-        (item) =>
-          item.id === materialId
-      );
-
-    /*
-     * NOTIFICATION:
-     * Materi berikutnya terbuka.
-     */
-
-    if (
-      currentIndex !== -1 &&
-      currentIndex <
-        courseMaterials.length - 1
-    ) {
-      const nextMaterial =
-        courseMaterials[
-          currentIndex + 1
-        ];
-
-      const nextAlreadyCompleted =
-        updated.includes(
-          nextMaterial.id
+    try {
+      const alreadyCompleted =
+        completedMaterials.includes(
+          materialId
         );
 
-      if (!nextAlreadyCompleted) {
-        createNotification({
-          id: `material-unlocked-${nextMaterial.id}`,
-          type: "unlock",
-          title:
-            "Materi berikutnya terbuka",
-          message: `${nextMaterial.title} sekarang sudah bisa kamu pelajari.`,
-          link: `/material/${nextMaterial.id}`,
-        });
+      const updated =
+        markMaterialCompleted(
+          materialId
+        );
+
+      setCompletedMaterials(
+        Array.isArray(updated)
+          ? updated
+          : []
+      );
+
+      setError(null);
+
+      /*
+       * Jika sudah selesai sebelumnya,
+       * jangan buat notifikasi lagi.
+       */
+
+      if (alreadyCompleted) {
+        return;
       }
-    }
 
-    /*
-     * MILESTONE
-     */
+      const material =
+        materials.find(
+          (item) =>
+            item.id === materialId
+        );
 
-    const milestones = [
-      1,
-      5,
-      10,
-      20,
-    ];
+      if (!material) {
+        return;
+      }
 
-    milestones.forEach(
-      (milestone) => {
-        if (
-          updated.length ===
-          milestone
-        ) {
+      /*
+       * NOTIFICATION:
+       * Materi selesai.
+       */
+
+      createNotification({
+        id: `material-completed-${material.id}`,
+        type: "material",
+        title: "Materi selesai",
+        message: `Kamu telah menyelesaikan ${material.title}.`,
+        link: `/material/${material.id}`,
+      });
+
+      /*
+       * CARI MATERI DALAM COURSE
+       */
+
+      const courseMaterials =
+        materials.filter(
+          (item) =>
+            item.courseId ===
+            material.courseId
+        );
+
+      const currentIndex =
+        courseMaterials.findIndex(
+          (item) =>
+            item.id === materialId
+        );
+
+      /*
+       * NOTIFICATION:
+       * Materi berikutnya terbuka.
+       */
+
+      if (
+        currentIndex !== -1 &&
+        currentIndex <
+          courseMaterials.length - 1
+      ) {
+        const nextMaterial =
+          courseMaterials[
+            currentIndex + 1
+          ];
+
+        const nextAlreadyCompleted =
+          updated.includes(
+            nextMaterial.id
+          );
+
+        if (!nextAlreadyCompleted) {
           createNotification({
-            id: `milestone-${milestone}`,
-            type: "milestone",
+            id: `material-unlocked-${nextMaterial.id}`,
+            type: "unlock",
             title:
-              "Progress belajar bertambah",
-            message: `Kamu sudah menyelesaikan ${milestone} materi. Terus lanjutkan belajarnya!`,
-            link: "/progress",
+              "Materi berikutnya terbuka",
+            message: `${nextMaterial.title} sekarang sudah bisa kamu pelajari.`,
+            link: `/material/${nextMaterial.id}`,
           });
         }
       }
-    );
+
+      /*
+       * MILESTONE
+       */
+
+      const milestones = [
+        1,
+        5,
+        10,
+        20,
+      ];
+
+      milestones.forEach(
+        (milestone) => {
+          if (
+            updated.length ===
+            milestone
+          ) {
+            createNotification({
+              id: `milestone-${milestone}`,
+              type: "milestone",
+              title:
+                "Progress belajar bertambah",
+              message: `Kamu sudah menyelesaikan ${milestone} materi. Terus lanjutkan belajarnya!`,
+              link: "/progress",
+            });
+          }
+        }
+      );
+    } catch (err) {
+      console.error(
+        "Mark completed error:",
+        err
+      );
+
+      setError(
+        "Progress tidak dapat diperbarui."
+      );
+    }
   };
 
   /*
@@ -262,14 +358,29 @@ function useProgress() {
       return;
     }
 
-    const updated =
-      removeCompletedMaterial(
-        materialId
+    try {
+      const updated =
+        removeCompletedMaterial(
+          materialId
+        );
+
+      setCompletedMaterials(
+        Array.isArray(updated)
+          ? updated
+          : []
       );
 
-    setCompletedMaterials(
-      updated
-    );
+      setError(null);
+    } catch (err) {
+      console.error(
+        "Mark incomplete error:",
+        err
+      );
+
+      setError(
+        "Progress tidak dapat diperbarui."
+      );
+    }
   };
 
   /*
@@ -295,6 +406,8 @@ function useProgress() {
   return {
     currentUser,
     completedMaterials,
+    loading,
+    error,
     markCompleted,
     markIncomplete,
     isCompleted,

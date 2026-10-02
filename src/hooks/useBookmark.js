@@ -33,6 +33,12 @@ function useBookmark() {
   const [bookmarks, setBookmarks] =
     useState([]);
 
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState(null);
+
   /*
   |--------------------------------------------------------------------------
   | FIREBASE AUTH LISTENER
@@ -40,34 +46,88 @@ function useBookmark() {
   */
 
   useEffect(() => {
+    let mounted = true;
+
     const unsubscribe =
       onAuthStateChanged(
         auth,
         (user) => {
-          setCurrentUser(user);
-
-          /*
-           * Guest tidak memiliki
-           * bookmark.
-           */
-
-          if (!user) {
-            setBookmarks([]);
+          if (!mounted) {
             return;
           }
 
-          /*
-           * Ambil bookmark berdasarkan
-           * akun Firebase yang login.
-           */
+          try {
+            setError(null);
+            setCurrentUser(user);
 
-          setBookmarks(
-            getBookmarks()
+            /*
+             * Guest tidak memiliki
+             * bookmark.
+             */
+
+            if (!user) {
+              setBookmarks([]);
+              setLoading(false);
+              return;
+            }
+
+            /*
+             * Ambil bookmark berdasarkan
+             * akun Firebase yang login.
+             */
+
+            const savedBookmarks =
+              getBookmarks();
+
+            setBookmarks(
+              Array.isArray(
+                savedBookmarks
+              )
+                ? savedBookmarks
+                : []
+            );
+
+            setLoading(false);
+          } catch (err) {
+            console.error(
+              "Bookmark load error:",
+              err
+            );
+
+            setBookmarks([]);
+
+            setError(
+              "Bookmark tidak dapat dimuat."
+            );
+
+            setLoading(false);
+          }
+        },
+        (err) => {
+          if (!mounted) {
+            return;
+          }
+
+          console.error(
+            "Auth listener error:",
+            err
           );
+
+          setCurrentUser(null);
+          setBookmarks([]);
+
+          setError(
+            "Terjadi masalah saat memuat akun."
+          );
+
+          setLoading(false);
         }
       );
 
-    return () => unsubscribe();
+    return () => {
+      mounted = false;
+      unsubscribe();
+    };
   }, []);
 
   /*
@@ -83,9 +143,29 @@ function useBookmark() {
     }
 
     const refreshBookmarks = () => {
-      setBookmarks(
-        getBookmarks()
-      );
+      try {
+        const savedBookmarks =
+          getBookmarks();
+
+        setBookmarks(
+          Array.isArray(
+            savedBookmarks
+          )
+            ? savedBookmarks
+            : []
+        );
+
+        setError(null);
+      } catch (err) {
+        console.error(
+          "Bookmark refresh error:",
+          err
+        );
+
+        setError(
+          "Bookmark tidak dapat diperbarui."
+        );
+      }
     };
 
     window.addEventListener(
@@ -119,45 +199,62 @@ function useBookmark() {
       return;
     }
 
-    const wasBookmarked =
-      bookmarks.includes(
-        materialId
+    try {
+      const wasBookmarked =
+        bookmarks.includes(
+          materialId
+        );
+
+      const updated =
+        toggleBookmark(
+          materialId
+        );
+
+      setBookmarks(
+        Array.isArray(updated)
+          ? updated
+          : []
       );
 
-    const updated =
-      toggleBookmark(
-        materialId
+      setError(null);
+
+      /*
+       * Cari materi.
+       */
+
+      const material =
+        materials.find(
+          (item) =>
+            item.id === materialId
+        );
+
+      if (!material) {
+        return;
+      }
+
+      /*
+       * Notifikasi hanya ketika
+       * materi baru ditambahkan.
+       */
+
+      if (!wasBookmarked) {
+        createNotification({
+          id: `bookmark-${material.id}`,
+          type: "bookmark",
+          title: "Materi disimpan",
+          message: `${material.title} telah ditambahkan ke bookmark.`,
+          link: `/material/${material.id}`,
+        });
+      }
+    } catch (err) {
+      console.error(
+        "Toggle bookmark error:",
+        err
       );
 
-    setBookmarks(updated);
-
-    /*
-     * Cari materi.
-     */
-
-    const material =
-      materials.find(
-        (item) =>
-          item.id === materialId
+      setError(
+        "Bookmark tidak dapat diperbarui."
       );
-
-    if (!material) {
-      return;
-    }
-
-    /*
-     * Notifikasi hanya ketika
-     * materi baru ditambahkan.
-     */
-
-    if (!wasBookmarked) {
-      createNotification({
-        id: `bookmark-${material.id}`,
-        type: "bookmark",
-        title: "Materi disimpan",
-        message: `${material.title} telah ditambahkan ke bookmark.`,
-        link: `/material/${material.id}`,
-      });
     }
   };
 
@@ -184,6 +281,8 @@ function useBookmark() {
   return {
     currentUser,
     bookmarks,
+    loading,
+    error,
     toggle,
     isBookmarked,
   };

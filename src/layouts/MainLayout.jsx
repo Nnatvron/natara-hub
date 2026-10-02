@@ -142,6 +142,14 @@ function MainLayout() {
             course.description,
           semester:
             semester?.title || "",
+
+          /*
+           * Guest tetap boleh membuka
+           * halaman course.
+           *
+           * Nilai locked hanya digunakan
+           * untuk indikator visual.
+           */
           locked:
             !currentUser,
         });
@@ -188,6 +196,14 @@ function MainLayout() {
             semester?.title || "",
           course:
             course?.title || "",
+
+          /*
+           * Guest tetap boleh membuka
+           * halaman material.
+           *
+           * Nilai locked hanya digunakan
+           * untuk indikator visual.
+           */
           locked:
             !currentUser,
         });
@@ -251,25 +267,20 @@ function MainLayout() {
   |--------------------------------------------------------------------------
   | CLICK SEARCH RESULT
   |--------------------------------------------------------------------------
+  |
+  | Guest sekarang tetap bisa membuka
+  | Course / Material.
+  |
+  | Proteksi login dilakukan di halaman
+  | CourseDetail dan MaterialDetail,
+  | bukan dari Live Search.
+  |
   */
 
   const handleSearchResultClick = (
     result
   ) => {
     setShowSearchResults(false);
-
-    if (result.locked) {
-      navigate("/login", {
-        state: {
-          from:
-            result.type === "course"
-              ? "/course/" + result.id
-              : "/material/" + result.id,
-        },
-      });
-
-      return;
-    }
 
     navigate(
       result.type === "course"
@@ -317,15 +328,12 @@ function MainLayout() {
 
   return (
     <div className="app">
-
       {/* =========================================
           SIDEBAR DESKTOP
       ========================================= */}
 
       <aside className="sidebar">
-
         <div className="brand">
-
           <div className="brand-logo">
             N
           </div>
@@ -339,11 +347,9 @@ function MainLayout() {
               HUB
             </span>
           </div>
-
         </div>
 
         <nav className="sidebar-nav">
-
           <p className="nav-label">
             MENU
           </p>
@@ -376,7 +382,9 @@ function MainLayout() {
                 : "")
             }
           >
-            <BookOpen size={19} />
+            <BookOpen
+              size={19}
+            />
 
             <span>
               Materi
@@ -392,7 +400,9 @@ function MainLayout() {
                 : "")
             }
           >
-            <Bookmark size={19} />
+            <Bookmark
+              size={19}
+            />
 
             <span>
               Bookmark
@@ -408,7 +418,9 @@ function MainLayout() {
                 : "")
             }
           >
-            <BarChart3 size={19} />
+            <BarChart3
+              size={19}
+            />
 
             <span>
               Progress
@@ -428,30 +440,28 @@ function MainLayout() {
                 : "")
             }
           >
-            <User size={19} />
+            <User
+              size={19}
+            />
 
             <span>
               Profile
             </span>
           </NavLink>
-
         </nav>
 
         {/* SIDEBAR PROFILE */}
 
         <div className="sidebar-bottom">
-
           <NavLink
             to="/profile"
             className="mini-profile"
           >
-
             <div className="avatar">
               {userInitial}
             </div>
 
             <div>
-
               <strong>
                 {authLoading
                   ? "Memuat..."
@@ -463,13 +473,9 @@ function MainLayout() {
                   ? "Mahasiswa"
                   : "Belum login"}
               </span>
-
             </div>
-
           </NavLink>
-
         </div>
-
       </aside>
 
       {/* =========================================
@@ -477,11 +483,8 @@ function MainLayout() {
       ========================================= */}
 
       <main className="main-content">
-
         <header className="topbar">
-
           <div className="mobile-brand">
-
             <div className="brand-logo">
               N
             </div>
@@ -489,7 +492,6 @@ function MainLayout() {
             <strong>
               NATARA HUB
             </strong>
-
           </div>
 
           {/* =========================================
@@ -497,15 +499,15 @@ function MainLayout() {
           ========================================= */}
 
           <div className="search-wrapper">
-
             <form
               className="search-box"
               onSubmit={
                 handleSearchSubmit
               }
             >
-
-              <Search size={18} />
+              <Search
+                size={18}
+              />
 
               <input
                 type="text"
@@ -525,23 +527,17 @@ function MainLayout() {
                 placeholder="Cari materi, mata kuliah..."
                 aria-label="Cari materi atau mata kuliah"
               />
-
             </form>
 
             {/* LIVE RESULTS */}
 
             {showSearchResults &&
               searchQuery.trim() && (
-
                 <div className="search-results-dropdown">
-
                   {searchResults.length > 0 ? (
-
                     <div className="search-results-list">
-
                       {searchResults.map(
                         (result) => {
-
                           const resultKey =
                             result.type +
                             "-" +
@@ -565,7 +561,6 @@ function MainLayout() {
                                 )
                               }
                             >
-
                               <div
                                 className={
                                   "search-result-icon" +
@@ -574,7 +569,6 @@ function MainLayout() {
                                     : "")
                                 }
                               >
-
                                 {result.locked ? (
                                   <LockKeyhole
                                     size={17}
@@ -584,13 +578,10 @@ function MainLayout() {
                                     size={17}
                                   />
                                 )}
-
                               </div>
 
                               <div className="search-result-content">
-
                                 <div className="search-result-meta">
-
                                   <span>
                                     {result.type ===
                                     "course"
@@ -603,7 +594,6 @@ function MainLayout() {
                                       result.semester
                                     }
                                   </span>
-
                                 </div>
 
                                 <strong>
@@ -619,7 +609,6 @@ function MainLayout() {
                                     }
                                   </small>
                                 )}
-
                               </div>
 
                               {result.locked && (
@@ -628,22 +617,18 @@ function MainLayout() {
                                   className="search-result-lock"
                                 />
                               )}
-
                             </button>
                           );
                         }
                       )}
-
                     </div>
-
                   ) : (
-
                     <div className="search-no-results">
-
-                      <Search size={19} />
+                      <Search
+                        size={19}
+                      />
 
                       <div>
-
                         <strong>
                           Tidak ada hasil
                         </strong>
@@ -651,11 +636,8 @@ function MainLayout() {
                         <span>
                           Coba kata kunci lain.
                         </span>
-
                       </div>
-
                     </div>
-
                   )}
 
                   {searchResults.length > 0 && (
@@ -669,23 +651,18 @@ function MainLayout() {
                       Lihat semua hasil pencarian
                     </button>
                   )}
-
                 </div>
-
               )}
-
           </div>
 
           {/* TOPBAR ACTIONS */}
 
           <div className="topbar-actions">
-
             <NotificationBell />
 
             {/* PROFILE MENU */}
 
             <div className="profile-menu">
-
               <button
                 type="button"
                 className="top-avatar"
@@ -699,38 +676,30 @@ function MainLayout() {
               </button>
 
               {!authLoading && (
-
                 <div className="profile-dropdown">
-
                   {currentUser ? (
-
                     <>
-
                       <div className="profile-dropdown-user">
-
                         <div className="profile-dropdown-avatar">
-
                           {currentUser.displayName
                             ? currentUser.displayName
                                 .charAt(0)
                                 .toUpperCase()
                             : "G"}
-
                         </div>
 
                         <div className="profile-dropdown-info">
-
                           <strong>
                             {currentUser.displayName ||
                               "User"}
                           </strong>
 
                           <span>
-                            {currentUser.email}
+                            {
+                              currentUser.email
+                            }
                           </span>
-
                         </div>
-
                       </div>
 
                       <div className="profile-dropdown-divider" />
@@ -763,15 +732,10 @@ function MainLayout() {
                           Logout
                         </span>
                       </button>
-
                     </>
-
                   ) : (
-
                     <>
-
                       <div className="profile-dropdown-title">
-
                         <strong>
                           Selamat datang
                         </strong>
@@ -779,7 +743,6 @@ function MainLayout() {
                         <span>
                           Login untuk mulai belajar
                         </span>
-
                       </div>
 
                       <div className="profile-dropdown-divider" />
@@ -822,19 +785,12 @@ function MainLayout() {
                           Sign Up
                         </span>
                       </NavLink>
-
                     </>
-
                   )}
-
                 </div>
-
               )}
-
             </div>
-
           </div>
-
         </header>
 
         {/* PAGE CONTENT */}
@@ -842,7 +798,6 @@ function MainLayout() {
         <div className="page-content">
           <Outlet />
         </div>
-
       </main>
 
       {/* =========================================
@@ -850,7 +805,6 @@ function MainLayout() {
       ========================================= */}
 
       <nav className="mobile-nav">
-
         <NavLink
           to="/"
           end
@@ -879,7 +833,9 @@ function MainLayout() {
               : "")
           }
         >
-          <BookOpen size={20} />
+          <BookOpen
+            size={20}
+          />
 
           <span>
             Materi
@@ -895,7 +851,9 @@ function MainLayout() {
               : "")
           }
         >
-          <Bookmark size={20} />
+          <Bookmark
+            size={20}
+          />
 
           <span>
             Saved
@@ -911,7 +869,9 @@ function MainLayout() {
               : "")
           }
         >
-          <BarChart3 size={20} />
+          <BarChart3
+            size={20}
+          />
 
           <span>
             Progress
@@ -927,15 +887,15 @@ function MainLayout() {
               : "")
           }
         >
-          <User size={20} />
+          <User
+            size={20}
+          />
 
           <span>
             Profile
           </span>
         </NavLink>
-
       </nav>
-
     </div>
   );
 }

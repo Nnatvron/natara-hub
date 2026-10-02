@@ -1,56 +1,92 @@
+/* =========================================
+   REGISTER PAGE
+========================================= */
+
 .register-page {
   min-height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 32px 20px;
+
   background: #f8fafc;
+  box-sizing: border-box;
 }
+
+/* =========================================
+   REGISTER CARD
+========================================= */
 
 .register-card {
   width: 100%;
   max-width: 440px;
+
   padding: 32px;
+
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
-  box-shadow:
-    0 18px 40px rgba(15, 23, 42, 0.08);
+
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+
+  box-sizing: border-box;
 }
+
+/* =========================================
+   BRAND
+========================================= */
 
 .register-brand {
   display: flex;
   align-items: center;
   gap: 11px;
+
   margin-bottom: 32px;
 }
 
 .register-logo {
   width: 42px;
   height: 42px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  flex-shrink: 0;
+
   background: #2563eb;
   border-radius: 11px;
+
   color: #ffffff;
+
   font-size: 19px;
   font-weight: 800;
 }
 
 .register-brand strong {
   display: block;
+
   color: #111827;
   font-size: 15px;
+  line-height: 1.3;
   letter-spacing: 0.2px;
 }
 
 .register-brand span {
   display: block;
+
   margin-top: 2px;
+
   color: #94a3b8;
   font-size: 10px;
+  line-height: 1.4;
 }
+
+/* =========================================
+   HEADER
+========================================= */
 
 .register-header {
   margin-bottom: 24px;
@@ -58,18 +94,25 @@
 
 .register-header h1 {
   margin: 0;
+
   color: #111827;
   font-size: 26px;
+  line-height: 1.25;
   font-weight: 750;
   letter-spacing: -0.5px;
 }
 
 .register-header p {
   margin: 7px 0 0;
+
   color: #64748b;
   font-size: 13px;
   line-height: 1.6;
 }
+
+/* =========================================
+   FORM
+========================================= */
 
 .register-form {
   display: flex;
@@ -86,24 +129,33 @@
 .register-field label {
   color: #334155;
   font-size: 12px;
+  line-height: 1.4;
   font-weight: 600;
 }
 
 .register-field input {
   width: 100%;
   height: 44px;
+
   padding: 0 13px;
+
+  box-sizing: border-box;
+
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 9px;
+
   color: #111827;
+
   font-family: inherit;
   font-size: 13px;
+
   outline: none;
-  box-sizing: border-box;
+
   transition:
     border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    box-shadow 0.15s ease,
+    background 0.15s ease;
 }
 
 .register-field input::placeholder {
@@ -112,9 +164,9 @@
 
 .register-field input:focus {
   border-color: #2563eb;
+
   box-shadow:
-    0 0 0 3px
-    rgba(37, 99, 235, 0.1);
+    0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .register-field input:disabled {
@@ -122,9 +174,9 @@
   cursor: not-allowed;
 }
 
-/* ============================= */
-/* EMAIL VERIFICATION */
-/* ============================= */
+/* =========================================
+   EMAIL VERIFICATION
+========================================= */
 
 .register-verification-email {
   display: flex;
@@ -139,20 +191,30 @@
 
 .register-verification-email button {
   height: 44px;
+
   flex-shrink: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+
   padding: 0 13px;
+
   border: 1px solid #2563eb;
   border-radius: 9px;
+
   background: #2563eb;
   color: #ffffff;
+
   font-family: inherit;
   font-size: 12px;
   font-weight: 600;
+
   cursor: pointer;
+
+  box-sizing: border-box;
+
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
@@ -173,30 +235,38 @@
   flex-shrink: 0;
 }
 
-/* ============================= */
-/* VERIFICATION BOX */
-/* ============================= */
+/* =========================================
+   VERIFICATION BOX
+========================================= */
 
 .register-verification-box {
   display: flex;
   flex-direction: column;
   gap: 12px;
+
   padding: 14px;
   margin-top: -4px;
+
   border: 1px solid #bfdbfe;
   border-radius: 10px;
+
   background: #eff6ff;
+
+  box-sizing: border-box;
 }
 
 .register-verification-box strong {
   display: block;
+
   color: #1e3a8a;
   font-size: 13px;
+  line-height: 1.4;
   font-weight: 700;
 }
 
 .register-verification-box p {
   margin: 4px 0 0;
+
   color: #475569;
   font-size: 11px;
   line-height: 1.5;
@@ -204,28 +274,38 @@
 
 .register-verification-box span {
   display: block;
+
   margin-top: 2px;
+
   color: #2563eb;
   font-size: 12px;
+  line-height: 1.5;
   font-weight: 600;
+
   word-break: break-word;
 }
 
 .register-verification-box button {
   width: 100%;
   height: 38px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
+
   border: 1px solid #2563eb;
   border-radius: 8px;
+
   background: #ffffff;
   color: #2563eb;
+
   font-family: inherit;
   font-size: 12px;
   font-weight: 650;
+
   cursor: pointer;
+
   transition:
     background 0.15s ease,
     color 0.15s ease;
@@ -241,15 +321,19 @@
   cursor: not-allowed;
 }
 
+.register-verification-box button svg {
+  flex-shrink: 0;
+}
+
 .register-verification-box small {
   color: #64748b;
   font-size: 10px;
   line-height: 1.5;
 }
 
-/* ============================= */
-/* PASSWORD */
-/* ============================= */
+/* =========================================
+   PASSWORD
+========================================= */
 
 .register-password {
   position: relative;
@@ -261,33 +345,52 @@
 
 .register-password button {
   position: absolute;
+
   top: 50%;
   right: 10px;
+
   width: 30px;
   height: 30px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   transform: translateY(-50%);
+
   background: transparent;
   border: 0;
   border-radius: 7px;
+
   color: #64748b;
+
   cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .register-password button:hover {
   background: #f1f5f9;
+  color: #334155;
 }
 
-/* ============================= */
-/* PASSWORD RULES */
-/* ============================= */
+.register-password button:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.2);
+  outline-offset: 1px;
+}
+
+/* =========================================
+   PASSWORD RULES
+========================================= */
 
 .register-password-rules {
   display: grid;
   grid-template-columns: 1fr 1fr;
+
   gap: 6px 10px;
+
   margin-top: 2px;
 }
 
@@ -295,9 +398,13 @@
   display: flex;
   align-items: center;
   gap: 5px;
+
+  min-width: 0;
+
   color: #94a3b8;
   font-size: 10px;
   line-height: 1.4;
+
   transition: color 0.15s ease;
 }
 
@@ -310,70 +417,102 @@
   font-weight: 500;
 }
 
-/* ============================= */
-/* ERROR */
-/* ============================= */
+/* =========================================
+   ERROR
+========================================= */
 
 .register-error {
   padding: 10px 12px;
+
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 8px;
+
   color: #dc2626;
   font-size: 12px;
   line-height: 1.5;
+
+  box-sizing: border-box;
 }
 
-/* ============================= */
-/* SUCCESS */
-/* ============================= */
+/* =========================================
+   SUCCESS
+========================================= */
 
 .register-success {
   padding: 10px 12px;
+
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   border-radius: 8px;
+
   color: #16a34a;
   font-size: 12px;
   line-height: 1.5;
+
+  box-sizing: border-box;
 }
 
-/* ============================= */
-/* SUBMIT */
-/* ============================= */
+/* =========================================
+   SUBMIT
+========================================= */
 
 .register-submit {
   width: 100%;
   height: 44px;
+
   margin-top: 2px;
+  padding: 0 15px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+
   background: #2563eb;
   border: 0;
   border-radius: 9px;
+
   color: #ffffff;
+
   font-family: inherit;
   font-size: 13px;
   font-weight: 650;
+
   cursor: pointer;
+
+  box-sizing: border-box;
+
   transition:
     background 0.15s ease,
-    transform 0.15s ease;
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .register-submit:hover {
   background: #1d4ed8;
+
+  box-shadow:
+    0 6px 16px rgba(37, 99, 235, 0.16);
+
+  transform: translateY(-1px);
 }
 
 .register-submit:active {
   transform: translateY(1px);
+  box-shadow: none;
 }
 
 .register-submit:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.register-submit:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.18);
+  outline-offset: 2px;
 }
 
 .register-spinner {
@@ -386,46 +525,213 @@
   }
 }
 
-/* ============================= */
-/* FOOTER */
-/* ============================= */
+/* =========================================
+   FOOTER
+========================================= */
 
 .register-footer {
   margin-top: 24px;
+
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
+
   color: #64748b;
   font-size: 12px;
+  line-height: 1.5;
+
+  text-align: center;
 }
 
 .register-footer a {
   color: #2563eb;
   font-weight: 650;
   text-decoration: none;
+
+  transition: color 0.15s ease;
 }
 
 .register-footer a:hover {
+  color: #1d4ed8;
   text-decoration: underline;
 }
 
-/* ============================= */
-/* MOBILE */
-/* ============================= */
+/* =========================================
+   GOOGLE SIGN UP DIVIDER
+========================================= */
+
+.register-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin: 20px 0 16px;
+
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.register-divider::before,
+.register-divider::after {
+  content: "";
+
+  flex: 1;
+
+  height: 1px;
+
+  background: #e2e8f0;
+}
+
+.register-divider span {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   GOOGLE SIGN UP
+========================================= */
+
+.register-google {
+  width: 100%;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  padding: 0 15px;
+
+  background: #ffffff;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+
+  color: #334155;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.register-google:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.register-google:active {
+  transform: translateY(1px);
+}
+
+.register-google:focus-visible {
+  outline: none;
+
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.register-google:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.register-google svg {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 768px) {
+  .register-page {
+    padding: 28px 18px;
+  }
+
+  .register-card {
+    max-width: 430px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 480px) {
   .register-page {
+    min-height: 100dvh;
     padding: 20px 14px;
   }
 
   .register-card {
+    max-width: 100%;
     padding: 24px 20px;
     border-radius: 15px;
   }
 
   .register-brand {
     margin-bottom: 27px;
+  }
+
+  .register-logo {
+    width: 39px;
+    height: 39px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+
+  .register-brand strong {
+    font-size: 14px;
+  }
+
+  .register-brand span {
+    font-size: 9px;
+  }
+
+  .register-header {
+    margin-bottom: 21px;
+  }
+
+  .register-header h1 {
+    font-size: 23px;
+  }
+
+  .register-header p {
+    font-size: 12px;
+  }
+
+  .register-form {
+    gap: 15px;
+  }
+
+  .register-field {
+    gap: 6px;
+  }
+
+  .register-field label {
+    font-size: 11px;
+  }
+
+  .register-field input {
+    height: 43px;
+    font-size: 12px;
   }
 
   .register-verification-email {
@@ -437,8 +743,162 @@
     width: 100%;
   }
 
+  .register-verification-box {
+    padding: 12px;
+  }
+
   .register-password-rules {
     grid-template-columns: 1fr;
     gap: 5px;
+  }
+
+  .register-error,
+  .register-success {
+    font-size: 11px;
+  }
+
+  .register-submit {
+    height: 43px;
+    font-size: 12px;
+  }
+
+  .register-divider {
+    margin: 18px 0 14px;
+    font-size: 10px;
+  }
+
+  .register-google {
+    height: 43px;
+    font-size: 12px;
+  }
+
+  .register-footer {
+    margin-top: 20px;
+    font-size: 11px;
+  }
+}
+
+/* =========================================
+   EXTRA SMALL DEVICES
+========================================= */
+
+@media (max-width: 360px) {
+  .register-page {
+    padding: 10px;
+  }
+
+  .register-card {
+    padding: 21px 16px;
+    border-radius: 13px;
+  }
+
+  .register-brand {
+    gap: 9px;
+    margin-bottom: 22px;
+  }
+
+  .register-logo {
+    width: 36px;
+    height: 36px;
+    font-size: 17px;
+  }
+
+  .register-brand strong {
+    font-size: 13px;
+  }
+
+  .register-brand span {
+    font-size: 8px;
+  }
+
+  .register-header h1 {
+    font-size: 21px;
+  }
+
+  .register-header p {
+    font-size: 11px;
+  }
+
+  .register-form {
+    gap: 13px;
+  }
+
+  .register-field input {
+    height: 41px;
+    padding: 0 11px;
+    font-size: 11px;
+  }
+
+  .register-password input {
+    padding-right: 42px;
+  }
+
+  .register-password button {
+    right: 7px;
+    width: 29px;
+    height: 29px;
+  }
+
+  .register-password-rules div {
+    font-size: 9px;
+  }
+
+  .register-submit,
+  .register-google {
+    height: 41px;
+    font-size: 11px;
+  }
+
+  .register-footer {
+    font-size: 10px;
+  }
+}
+
+/* =========================================
+   TOUCH DEVICES
+========================================= */
+
+@media (hover: none) and (pointer: coarse) {
+  .register-submit,
+  .register-google,
+  .register-password button,
+  .register-verification-email button,
+  .register-verification-box button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .register-submit:active {
+    background: #1d4ed8;
+  }
+
+  .register-google:active {
+    background: #f8fafc;
+  }
+
+  .register-password button:active {
+    background: #f1f5f9;
+  }
+
+  .register-verification-email button:active {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .register-field input,
+  .register-password button,
+  .register-verification-email button,
+  .register-verification-box button,
+  .register-submit,
+  .register-footer a,
+  .register-google,
+  .register-spinner {
+    transition: none;
+    animation: none;
   }
 }

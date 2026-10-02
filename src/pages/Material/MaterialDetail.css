@@ -8,6 +8,7 @@
   background: #f8fafc;
   color: #111827;
   font-family: "Inter", sans-serif;
+  overflow-x: hidden;
 }
 
 /* =========================================================
@@ -18,37 +19,30 @@
   position: sticky;
   top: 0;
   z-index: 30;
-
   min-height: 64px;
   padding: 0 32px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  gap: 16px;
   background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid #e2e8f0;
-
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 .material-back-link {
+  min-width: 0;
   border: none;
   background: transparent;
-
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   padding: 8px 0;
-
   color: #475569;
   font-size: 14px;
   font-weight: 600;
-
   cursor: pointer;
-
   transition:
     color 0.2s ease,
     transform 0.2s ease;
@@ -59,29 +53,30 @@
   transform: translateX(-2px);
 }
 
+.material-back-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .material-top-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .material-bookmark-button {
   width: 40px;
   height: 40px;
-
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-
   background: #ffffff;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   color: #64748b;
-
   cursor: pointer;
-
   transition:
     color 0.2s ease,
     background 0.2s ease,
@@ -102,6 +97,12 @@
   background: #eff6ff;
 }
 
+.material-bookmark-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* =========================================================
    MAIN LAYOUT
    ========================================================= */
@@ -110,7 +111,6 @@
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
 }
@@ -122,24 +122,20 @@
 .material-sidebar {
   position: sticky;
   top: 64px;
-
   height: calc(100vh - 64px);
-
   padding: 24px 16px;
-
   background: #ffffff;
   border-right: 1px solid #e2e8f0;
-
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
 .material-sidebar-header {
   padding: 0 12px 16px;
-
   color: #111827;
   font-size: 13px;
   font-weight: 700;
-
   line-height: 1.5;
 }
 
@@ -151,21 +147,15 @@
 
 .material-sidebar-item {
   min-height: 52px;
-
   padding: 8px 10px;
-
   display: flex;
   align-items: center;
   gap: 10px;
-
   border: 1px solid transparent;
   border-radius: 10px;
-
   color: #64748b;
   text-decoration: none;
-
   cursor: pointer;
-
   transition:
     color 0.2s ease,
     background 0.2s ease,
@@ -197,31 +187,23 @@
 .material-sidebar-number {
   width: 28px;
   height: 28px;
-
   flex: 0 0 28px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 8px;
-
   background: #f1f5f9;
-
   color: #64748b;
-
   font-size: 12px;
   font-weight: 700;
 }
 
-.material-sidebar-item.active
-  .material-sidebar-number {
+.material-sidebar-item.active .material-sidebar-number {
   background: #2563eb;
   color: #ffffff;
 }
 
-.material-sidebar-item.locked
-  .material-sidebar-number {
+.material-sidebar-item.locked .material-sidebar-number {
   background: #f8fafc;
   color: #94a3b8;
 }
@@ -232,15 +214,13 @@
 }
 
 .material-sidebar-info span {
-  display: block;
-
+  display: -webkit-box;
+  overflow: hidden;
+  color: inherit;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.45;
-
-  overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
@@ -251,13 +231,11 @@
 
 .material-content {
   min-width: 0;
-
   max-width: 980px;
   width: 100%;
-
   margin: 0 auto;
-
   padding: 48px 48px 80px;
+  box-sizing: border-box;
 }
 
 /* =========================================================
@@ -274,11 +252,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-
   margin-bottom: 18px;
-
   color: #94a3b8;
-
   font-size: 13px;
   font-weight: 500;
 }
@@ -288,7 +263,6 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-
   margin-bottom: 16px;
 }
 
@@ -296,12 +270,9 @@
 .material-duration {
   display: inline-flex;
   align-items: center;
-
   min-height: 28px;
   padding: 5px 10px;
-
   border-radius: 6px;
-
   font-size: 12px;
   font-weight: 700;
 }
@@ -320,37 +291,29 @@
 
 .material-header h1 {
   margin: 0;
-
   color: #0f172a;
-
   font-size: clamp(28px, 4vw, 42px);
   font-weight: 750;
-
   line-height: 1.15;
   letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
 }
 
 .material-description {
   max-width: 760px;
-
   margin: 16px 0 0;
-
   color: #64748b;
-
   font-size: 16px;
   line-height: 1.75;
 }
 
 .material-progress-info {
   margin-top: 24px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-
   color: #94a3b8;
-
   font-size: 13px;
   font-weight: 600;
 }
@@ -359,7 +322,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-
   color: #16a34a;
 }
 
@@ -381,21 +343,18 @@
 
 .material-section h2 {
   margin: 0 0 14px;
-
   color: #0f172a;
-
   font-size: 21px;
   font-weight: 700;
-
   line-height: 1.35;
   letter-spacing: -0.015em;
 }
 
 .material-section-content {
   color: #475569;
-
   font-size: 15px;
   line-height: 1.85;
+  overflow-wrap: anywhere;
 }
 
 .material-section-content br {
@@ -407,9 +366,7 @@
 .material-list {
   margin: 16px 0 0;
   padding-left: 22px;
-
   color: #475569;
-
   font-size: 15px;
   line-height: 1.8;
 }
@@ -428,34 +385,25 @@
    ========================================================= */
 
 .material-code-wrapper {
+  width: 100%;
   margin: 24px 0;
-
   overflow: hidden;
-
   border: 1px solid #1e293b;
   border-radius: 12px;
-
   background: #0f172a;
-
-  box-shadow:
-    0 8px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
 .material-code-title {
   min-height: 44px;
-
   padding: 10px 14px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-
   background: #111827;
   border-bottom: 1px solid #1e293b;
-
   color: #cbd5e1;
-
   font-family: "Inter", sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -470,21 +418,20 @@
 .material-code {
   margin: 0;
   padding: 20px;
-
+  max-width: 100%;
   overflow-x: auto;
-
   color: #e2e8f0;
-
   font-family:
     "Fira Code",
     "Cascadia Code",
     Consolas,
     monospace;
-
   font-size: 13px;
   line-height: 1.75;
-
   tab-size: 2;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #475569 transparent;
 }
 
 .material-code code {
@@ -497,12 +444,9 @@
 
 .material-quick-check {
   margin: 28px 0;
-
   padding: 20px;
-
   border: 1px solid #dbeafe;
   border-radius: 12px;
-
   background: #eff6ff;
 }
 
@@ -510,27 +454,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   margin-bottom: 12px;
-
   color: #2563eb;
-
   font-size: 14px;
   font-weight: 700;
 }
 
 .material-quick-check > p {
   margin: 0;
-
   color: #334155;
-
   font-size: 14px;
   line-height: 1.7;
 }
 
 .quick-check-options {
   margin-top: 14px;
-
   display: flex;
   flex-direction: column;
   gap: 7px;
@@ -538,14 +476,10 @@
 
 .quick-check-option {
   padding: 9px 12px;
-
   border-radius: 8px;
-
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid #dbeafe;
-
   color: #475569;
-
   font-size: 13px;
   line-height: 1.5;
 }
@@ -556,26 +490,19 @@
 
 .material-quiz {
   margin-top: 42px;
-
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-
   background: #ffffff;
-
   overflow: hidden;
-
-  box-shadow:
-    0 8px 30px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
 }
 
 .material-quiz-header {
   padding: 28px;
-
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -584,65 +511,49 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   margin-bottom: 10px;
-
   color: #2563eb;
-
   font-size: 13px;
   font-weight: 700;
 }
 
 .material-quiz-header h2 {
   margin: 0;
-
   color: #0f172a;
-
   font-size: 22px;
   font-weight: 750;
-
   letter-spacing: -0.02em;
 }
 
 .material-quiz-header p {
   margin: 7px 0 0;
-
   color: #64748b;
-
   font-size: 14px;
   line-height: 1.6;
 }
 
 .material-quiz-score {
   min-width: 88px;
-
   padding: 12px 16px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-
   border: 1px solid #dbeafe;
   border-radius: 10px;
-
   background: #eff6ff;
 }
 
 .material-quiz-score span {
   color: #64748b;
-
   font-size: 11px;
   font-weight: 700;
-
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .material-quiz-score strong {
   margin-top: 2px;
-
   color: #2563eb;
-
   font-size: 25px;
   font-weight: 800;
 }
@@ -657,11 +568,8 @@
 
 .material-quiz-progress > span {
   display: block;
-
   margin-bottom: 9px;
-
   color: #64748b;
-
   font-size: 12px;
   font-weight: 700;
 }
@@ -669,33 +577,25 @@
 .material-quiz-progress-bar {
   width: 100%;
   height: 6px;
-
   overflow: hidden;
-
   border-radius: 999px;
-
   background: #e2e8f0;
 }
 
 .material-quiz-progress-bar div {
   height: 100%;
-
   border-radius: inherit;
-
   background: #2563eb;
-
   transition: width 0.3s ease;
 }
 
 .material-question h3 {
   margin: 0 0 20px;
-
   color: #111827;
-
   font-size: 18px;
   font-weight: 700;
-
   line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .material-options {
@@ -706,38 +606,29 @@
 
 .material-option {
   width: 100%;
-
   padding: 14px;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-
   background: #ffffff;
-
   color: #334155;
-
   text-align: left;
-
   cursor: pointer;
-
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
     transform 0.2s ease,
     box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .material-option:hover:not(:disabled) {
   border-color: #93c5fd;
   background: #f8fbff;
   transform: translateY(-1px);
-
-  box-shadow:
-    0 4px 12px rgba(37, 99, 235, 0.06);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06);
 }
 
 .material-option.selected {
@@ -764,62 +655,51 @@
 .material-option-letter {
   width: 32px;
   height: 32px;
-
   flex: 0 0 32px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-
   background: #f8fafc;
-
   color: #64748b;
-
   font-size: 12px;
   font-weight: 800;
 }
 
-.material-option.selected
-  .material-option-letter {
+.material-option.selected .material-option-letter {
   border-color: #93c5fd;
   background: #dbeafe;
   color: #2563eb;
 }
 
-.material-option.correct
-  .material-option-letter {
+.material-option.correct .material-option-letter {
   border-color: #86efac;
   background: #dcfce7;
   color: #16a34a;
 }
 
-.material-option.incorrect
-  .material-option-letter {
+.material-option.incorrect .material-option-letter {
   border-color: #fca5a5;
   background: #fee2e2;
   color: #dc2626;
 }
 
 .material-option-text {
+  min-width: 0;
   flex: 1;
-
   font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .material-quiz-feedback {
   margin-top: 20px;
-
   padding: 14px 16px;
-
   display: flex;
   align-items: flex-start;
   gap: 10px;
-
   border-radius: 10px;
 }
 
@@ -841,9 +721,7 @@
 
 .material-quiz-feedback p {
   margin: 3px 0 0;
-
   color: inherit;
-
   font-size: 13px;
   line-height: 1.55;
 }
@@ -858,12 +736,9 @@
 
 .material-quiz-final {
   margin-top: 18px;
-
   padding: 18px;
-
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-
   background: #f8fafc;
 }
 
@@ -876,29 +751,23 @@
 
 .material-quiz-final > div:first-child span {
   color: #64748b;
-
   font-size: 13px;
   font-weight: 600;
 }
 
 .material-quiz-final > div:first-child strong {
   color: #111827;
-
   font-size: 16px;
 }
 
 .material-quiz-pass,
 .material-quiz-fail {
   margin-top: 14px;
-
   padding-top: 14px;
-
   display: flex;
   align-items: center;
   gap: 8px;
-
   border-top: 1px solid #e2e8f0;
-
   font-size: 13px;
   font-weight: 600;
 }
@@ -917,7 +786,6 @@
 
 .material-quiz-controls {
   margin-top: 24px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -927,22 +795,16 @@
 .material-primary-button,
 .material-secondary-button {
   min-height: 42px;
-
   padding: 0 16px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-
   border-radius: 9px;
-
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
-
   cursor: pointer;
-
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -953,27 +815,20 @@
 
 .material-primary-button {
   border: 1px solid #2563eb;
-
   background: #2563eb;
-
   color: #ffffff;
 }
 
 .material-primary-button:hover:not(:disabled) {
   background: #1d4ed8;
   border-color: #1d4ed8;
-
   transform: translateY(-1px);
-
-  box-shadow:
-    0 5px 14px rgba(37, 99, 235, 0.18);
+  box-shadow: 0 5px 14px rgba(37, 99, 235, 0.18);
 }
 
 .material-secondary-button {
   border: 1px solid #e2e8f0;
-
   background: #ffffff;
-
   color: #475569;
 }
 
@@ -1002,32 +857,25 @@
 .material-complete-box,
 .material-completed-box {
   padding: 22px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-
   border: 1px solid #e2e8f0;
   border-radius: 14px;
-
   background: #ffffff;
 }
 
 .material-complete-box h3 {
   margin: 0;
-
   color: #111827;
-
   font-size: 16px;
   font-weight: 750;
 }
 
 .material-complete-box p {
   margin: 5px 0 0;
-
   color: #64748b;
-
   font-size: 13px;
   line-height: 1.6;
 }
@@ -1040,47 +888,37 @@
 .material-completed-icon {
   width: 44px;
   height: 44px;
-
   flex: 0 0 44px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 10px;
-
   background: #dcfce7;
-
   color: #16a34a;
 }
 
 .material-completed-box > div:last-child {
   flex: 1;
+  min-width: 0;
 }
 
 .material-completed-box strong {
   color: #166534;
-
   font-size: 15px;
 }
 
 .material-completed-box p {
   margin: 4px 0 0;
-
   color: #4d7c5a;
-
   font-size: 13px;
 }
 
 .material-lock-notice {
   margin-top: 12px;
-
   display: flex;
   align-items: center;
   gap: 7px;
-
   color: #dc2626;
-
   font-size: 12px;
   font-weight: 600;
 }
@@ -1091,7 +929,6 @@
 
 .material-navigation {
   margin-top: 24px;
-
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
@@ -1099,24 +936,16 @@
 
 .material-navigation-button {
   min-width: 0;
-
   padding: 16px;
-
   display: flex;
   align-items: center;
   gap: 12px;
-
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-
   background: #ffffff;
-
   color: #475569;
-
   text-align: left;
-
   cursor: pointer;
-
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
@@ -1136,27 +965,20 @@
 
 .material-navigation-button span {
   display: block;
-
   margin-bottom: 4px;
-
   color: #94a3b8;
-
   font-size: 11px;
   font-weight: 700;
-
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .material-navigation-button strong {
   display: block;
-
   color: #334155;
-
   font-size: 13px;
   font-weight: 700;
   line-height: 1.45;
-
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1169,63 +991,85 @@
 }
 
 /* =========================================================
+   LOADING / ERROR STATES
+   ========================================================= */
+
+.material-loading-state {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.material-loading-state-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.material-loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #dbeafe;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: materialLoadingSpin 0.8s linear infinite;
+}
+
+@keyframes materialLoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
    NOT FOUND
    ========================================================= */
 
 .material-not-found {
   min-height: 70vh;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   padding: 32px;
-
   text-align: center;
-
   color: #64748b;
 }
 
 .material-not-found svg {
   margin-bottom: 16px;
-
   color: #2563eb;
 }
 
 .material-not-found h2 {
   margin: 0;
-
   color: #111827;
-
   font-size: 24px;
 }
 
 .material-not-found p {
+  max-width: 520px;
   margin: 8px 0 20px;
-
   font-size: 14px;
+  line-height: 1.6;
 }
 
 .material-back-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   min-height: 42px;
-
   padding: 0 16px;
-
   border-radius: 9px;
-
   background: #2563eb;
   color: #ffffff;
-
   text-decoration: none;
-
   font-size: 13px;
   font-weight: 700;
-
   transition:
     background 0.2s ease,
     transform 0.2s ease;
@@ -1278,10 +1122,14 @@
   .material-content {
     padding: 40px 32px 70px;
   }
+
+  .material-header h1 {
+    font-size: clamp(28px, 4vw, 38px);
+  }
 }
 
 /* =========================================================
-   MOBILE
+   TABLET / LARGE MOBILE
    ========================================================= */
 
 @media (max-width: 768px) {
@@ -1296,14 +1144,10 @@
 
   .material-sidebar {
     position: static;
-
     height: auto;
-
     padding: 12px 16px;
-
     border-right: none;
     border-bottom: 1px solid #e2e8f0;
-
     overflow-x: auto;
     overflow-y: hidden;
   }
@@ -1314,14 +1158,12 @@
 
   .material-sidebar-list {
     flex-direction: row;
-
     width: max-content;
   }
 
   .material-sidebar-item {
     width: 220px;
     min-height: 48px;
-
     padding: 7px 9px;
   }
 
@@ -1331,7 +1173,6 @@
 
   .material-content {
     max-width: none;
-
     padding: 32px 20px 60px;
   }
 
@@ -1343,9 +1184,14 @@
     font-size: 14px;
   }
 
+  .material-progress-info {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .material-quiz-header {
     padding: 22px;
-
     flex-direction: column;
   }
 
@@ -1363,65 +1209,68 @@
     flex-direction: column;
   }
 
-  .material-complete-box
-    .material-primary-button {
+  .material-complete-box .material-primary-button {
     width: 100%;
   }
 }
 
 /* =========================================================
-   SMALL MOBILE
+   MOBILE
    ========================================================= */
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .material-topbar {
-    padding: 0 12px;
+    gap: 10px;
   }
 
   .material-back-link {
-    max-width: calc(100% - 48px);
-
-    font-size: 12px;
-  }
-
-  .material-back-link span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .material-bookmark-button {
-    width: 38px;
-    height: 38px;
-  }
-
-  .material-sidebar {
-    padding: 10px 12px;
-  }
-
-  .material-sidebar-item {
-    width: 190px;
+    font-size: 13px;
   }
 
   .material-content {
-    padding: 26px 16px 48px;
+    padding: 28px 18px 54px;
+  }
+
+  .material-header {
+    padding-bottom: 26px;
   }
 
   .material-breadcrumb {
+    gap: 6px;
+    margin-bottom: 14px;
     font-size: 11px;
   }
 
+  .material-type-row {
+    gap: 6px;
+    margin-bottom: 13px;
+  }
+
+  .material-type,
+  .material-duration {
+    min-height: 26px;
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
   .material-header h1 {
-    font-size: 26px;
+    font-size: 27px;
+    letter-spacing: -0.025em;
   }
 
   .material-description {
+    margin-top: 12px;
     font-size: 13px;
     line-height: 1.7;
   }
 
   .material-progress-info {
-    font-size: 11px;
+    margin-top: 18px;
+    font-size: 10px;
+  }
+
+  .material-body {
+    padding-top: 28px;
   }
 
   .material-section {
@@ -1429,80 +1278,215 @@
   }
 
   .material-section h2 {
+    margin-bottom: 11px;
     font-size: 18px;
   }
 
   .material-section-content,
   .material-list {
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .material-code-wrapper {
+    margin: 20px 0;
+    border-radius: 10px;
+  }
+
+  .material-code-title {
+    min-height: 40px;
+    padding: 8px 11px;
+    font-size: 10px;
   }
 
   .material-code {
-    padding: 16px;
-
-    font-size: 12px;
+    padding: 14px;
+    font-size: 11px;
+    line-height: 1.7;
   }
 
   .material-quick-check {
-    padding: 16px;
+    margin: 22px 0;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .material-quick-check-header {
+    font-size: 12px;
+  }
+
+  .material-quick-check > p {
+    font-size: 12px;
+  }
+
+  .quick-check-option {
+    font-size: 11px;
   }
 
   .material-quiz {
-    margin-top: 32px;
-
+    margin-top: 30px;
     border-radius: 12px;
   }
 
   .material-quiz-header {
     padding: 18px;
+    gap: 16px;
+  }
+
+  .material-quiz-label {
+    font-size: 11px;
   }
 
   .material-quiz-header h2 {
     font-size: 19px;
   }
 
+  .material-quiz-header p {
+    font-size: 12px;
+  }
+
+  .material-quiz-score {
+    min-width: 78px;
+    padding: 9px 12px;
+  }
+
+  .material-quiz-score span {
+    font-size: 9px;
+  }
+
+  .material-quiz-score strong {
+    font-size: 21px;
+  }
+
   .material-quiz-content {
     padding: 18px;
   }
 
+  .material-quiz-progress {
+    margin-bottom: 20px;
+  }
+
+  .material-quiz-progress > span {
+    font-size: 10px;
+  }
+
   .material-question h3 {
-    font-size: 16px;
+    margin-bottom: 15px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .material-options {
+    gap: 8px;
   }
 
   .material-option {
     padding: 11px;
-  }
-
-  .material-option-text {
-    font-size: 13px;
+    gap: 9px;
+    border-radius: 9px;
   }
 
   .material-option-letter {
     width: 29px;
     height: 29px;
-
     flex-basis: 29px;
+    border-radius: 7px;
+    font-size: 10px;
+  }
+
+  .material-option-text {
+    font-size: 12px;
+  }
+
+  .material-quiz-feedback {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .material-quiz-feedback strong {
+    font-size: 12px;
+  }
+
+  .material-quiz-feedback p {
+    font-size: 11px;
+  }
+
+  .material-quiz-final {
+    padding: 14px;
+  }
+
+  .material-quiz-final > div:first-child {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .material-quiz-final > div:first-child span {
+    font-size: 11px;
+  }
+
+  .material-quiz-final > div:first-child strong {
+    font-size: 14px;
+  }
+
+  .material-quiz-pass,
+  .material-quiz-fail {
+    font-size: 11px;
   }
 
   .material-quiz-controls {
+    margin-top: 20px;
     flex-direction: column-reverse;
     align-items: stretch;
   }
 
-  .material-quiz-controls
-    button {
+  .material-quiz-controls button {
     width: 100%;
   }
 
-  .material-quiz-final
-    > div:first-child {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 5px;
+  .material-primary-button,
+  .material-secondary-button {
+    min-height: 40px;
+    font-size: 12px;
+  }
+
+  .material-complete-section {
+    margin-top: 32px;
+  }
+
+  .material-complete-box,
+  .material-completed-box {
+    padding: 17px;
+    gap: 15px;
+    border-radius: 12px;
+  }
+
+  .material-complete-box h3 {
+    font-size: 14px;
+  }
+
+  .material-complete-box p,
+  .material-completed-box p {
+    font-size: 11px;
+  }
+
+  .material-completed-icon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .material-lock-notice {
+    font-size: 10px;
   }
 
   .material-navigation {
+    margin-top: 20px;
     grid-template-columns: 1fr;
+  }
+
+  .material-navigation-button {
+    padding: 13px;
   }
 
   .material-navigation-button.next {
@@ -1510,8 +1494,236 @@
     text-align: left;
   }
 
+  .material-navigation-button span {
+    font-size: 9px;
+  }
+
+  .material-navigation-button strong {
+    font-size: 11px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 430px) {
+  .material-topbar {
+    min-height: 54px;
+    padding: 0 10px;
+  }
+
+  .material-back-link {
+    max-width: calc(100% - 46px);
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .material-back-link svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .material-bookmark-button {
+    width: 35px;
+    height: 35px;
+    border-radius: 9px;
+  }
+
+  .material-sidebar {
+    padding: 8px 10px;
+  }
+
+  .material-sidebar-list {
+    gap: 5px;
+  }
+
+  .material-sidebar-item {
+    width: 180px;
+    min-height: 44px;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 9px;
+  }
+
+  .material-sidebar-number {
+    width: 25px;
+    height: 25px;
+    flex-basis: 25px;
+    border-radius: 7px;
+    font-size: 10px;
+  }
+
+  .material-sidebar-info span {
+    font-size: 10px;
+  }
+
+  .material-content {
+    padding: 23px 14px 46px;
+  }
+
+  .material-header h1 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .material-description {
+    font-size: 12px;
+  }
+
+  .material-breadcrumb {
+    font-size: 10px;
+  }
+
+  .material-type,
+  .material-duration {
+    font-size: 9px;
+  }
+
+  .material-section h2 {
+    font-size: 17px;
+  }
+
+  .material-section-content,
+  .material-list {
+    font-size: 12px;
+  }
+
+  .material-code-title {
+    gap: 8px;
+    font-size: 9px;
+  }
+
+  .material-code {
+    padding: 12px;
+    font-size: 10px;
+  }
+
+  .material-quick-check {
+    padding: 13px;
+  }
+
+  .material-quiz {
+    margin-top: 25px;
+    border-radius: 10px;
+  }
+
+  .material-quiz-header {
+    padding: 15px;
+  }
+
+  .material-quiz-content {
+    padding: 15px;
+  }
+
+  .material-quiz-header h2 {
+    font-size: 17px;
+  }
+
+  .material-question h3 {
+    font-size: 14px;
+  }
+
+  .material-option {
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .material-option-letter {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+  }
+
+  .material-option-text {
+    font-size: 11px;
+  }
+
   .material-complete-box,
   .material-completed-box {
-    padding: 18px;
+    padding: 15px;
+  }
+
+  .material-navigation-button {
+    min-height: 56px;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .material-topbar {
+    padding: 0 8px;
+  }
+
+  .material-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .material-header h1 {
+    font-size: 22px;
+  }
+
+  .material-sidebar-item {
+    width: 165px;
+  }
+
+  .material-option-text {
+    font-size: 10px;
+  }
+
+  .material-primary-button,
+  .material-secondary-button {
+    font-size: 11px;
+  }
+}
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+  .material-back-link,
+  .material-bookmark-button,
+  .material-sidebar-item,
+  .material-option,
+  .material-primary-button,
+  .material-secondary-button,
+  .material-navigation-button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .material-option:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .material-navigation-button:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .material-back-link,
+  .material-bookmark-button,
+  .material-sidebar-item,
+  .material-option,
+  .material-quiz-progress-bar div,
+  .material-primary-button,
+  .material-secondary-button,
+  .material-navigation-button {
+    transition: none;
+  }
+
+  .material-loading-spinner {
+    animation: none;
   }
 }
