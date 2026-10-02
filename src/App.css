@@ -1,0 +1,921 @@
+/* =========================================
+   NATARA HUB
+   MAIN LAYOUT
+========================================= */
+
+.app {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 250px;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 28px 18px;
+
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 0 10px;
+  margin-bottom: 42px;
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.brand h1 {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.brand span {
+  display: block;
+  margin-top: 4px;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+
+  color: #64748b;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-label {
+  padding: 0 12px;
+  margin-bottom: 8px;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+
+  color: #94a3b8;
+}
+
+.nav-label.second {
+  margin-top: 27px;
+}
+
+.nav-item {
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 0 12px;
+
+  border-radius: 10px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.nav-item:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.nav-item.active {
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+
+  padding: 16px 8px 0;
+
+  border-top: 1px solid #f1f5f9;
+}
+
+.mini-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar,
+.top-avatar {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #dbeafe;
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mini-profile strong {
+  display: block;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mini-profile span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+/* =========================================
+   MAIN
+========================================= */
+
+.main-content {
+  min-height: 100vh;
+  margin-left: 250px;
+}
+
+/* =========================================
+   TOPBAR
+========================================= */
+
+.topbar {
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 42px;
+
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid #e5e7eb;
+
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  backdrop-filter: blur(12px);
+}
+
+.search-box {
+  width: min(420px, 45%);
+
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 13px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+
+  border-radius: 9px;
+
+  color: #94a3b8;
+}
+
+.search-box input {
+  width: 100%;
+
+  outline: none;
+  border: none;
+
+  background: transparent;
+
+  color: #1e293b;
+  font-size: 12px;
+}
+
+.search-box input::placeholder {
+  color: #94a3b8;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-button {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: transparent;
+  color: #64748b;
+
+  transition: 0.2s ease;
+}
+
+.icon-button:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.top-avatar {
+  width: 35px;
+  height: 35px;
+}
+
+/* =========================================
+   MOBILE BRAND
+========================================= */
+
+.mobile-brand {
+  display: none;
+  align-items: center;
+  gap: 9px;
+
+  font-size: 13px;
+}
+
+.mobile-brand .brand-logo {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 9px;
+
+  font-size: 15px;
+}
+
+/* =========================================
+   PAGE CONTENT
+========================================= */
+
+.page-content {
+  width: 100%;
+  max-width: 1240px;
+
+  margin: 0 auto;
+  padding: 42px;
+}
+
+/* =========================================
+   WELCOME
+========================================= */
+
+.welcome-section {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 30px;
+
+  margin-bottom: 48px;
+}
+
+.eyebrow,
+.section-kicker {
+  display: block;
+
+  margin-bottom: 9px;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+
+  color: #2563eb;
+}
+
+.welcome-section h2 {
+  color: #0f172a;
+
+  font-size: clamp(28px, 3vw, 39px);
+  line-height: 1.15;
+
+  letter-spacing: -1.2px;
+}
+
+.welcome-section h2 span {
+  color: #2563eb;
+}
+
+.welcome-section p {
+  margin-top: 14px;
+
+  color: #64748b;
+
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   SEMESTER CARD
+========================================= */
+
+.semester-card {
+  min-width: 240px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.04);
+}
+
+.semester-card span {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  color: #94a3b8;
+}
+
+.semester-card strong {
+  margin-top: 8px;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.semester-card small {
+  margin-top: 5px;
+
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* =========================================
+   SECTION
+========================================= */
+
+.section {
+  margin-bottom: 46px;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.section-header h3 {
+  font-size: 19px;
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.text-button {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  background: transparent;
+
+  color: #2563eb;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* =========================================
+   CONTINUE CARD
+========================================= */
+
+.continue-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  padding: 22px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.035);
+}
+
+.continue-icon {
+  width: 52px;
+  height: 52px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.continue-info {
+  flex: 1;
+}
+
+.continue-info > span {
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.continue-info h4 {
+  margin-top: 4px;
+
+  color: #0f172a;
+
+  font-size: 15px;
+}
+
+.progress-row {
+  max-width: 500px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 13px;
+}
+
+.progress-track {
+  height: 6px;
+
+  flex: 1;
+
+  overflow: hidden;
+
+  border-radius: 99px;
+
+  background: #e2e8f0;
+}
+
+.progress-fill {
+  width: 65%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: #2563eb;
+}
+
+.progress-row > span {
+  font-size: 10px;
+  font-weight: 600;
+
+  color: #2563eb;
+}
+
+.continue-info small {
+  display: block;
+
+  margin-top: 6px;
+
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.continue-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 10px 15px;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.continue-button:hover {
+  background: #1d4ed8;
+}
+
+/* =========================================
+   COURSE GRID
+========================================= */
+
+.course-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 16px;
+}
+
+.course-card {
+  padding: 21px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.07);
+}
+
+.course-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.course-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+}
+
+.course-icon.blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.course-icon.purple {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.course-icon.green {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.course-semester {
+  padding: 5px 8px;
+
+  border-radius: 6px;
+
+  background: #f8fafc;
+
+  color: #64748b;
+
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.course-card h4 {
+  margin-top: 18px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #0f172a;
+}
+
+.course-card p {
+  min-height: 42px;
+
+  margin-top: 8px;
+
+  color: #64748b;
+
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.course-footer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  margin-top: 19px;
+  padding-top: 14px;
+
+  border-top: 1px solid #f1f5f9;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+.course-footer span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* =========================================
+   MOBILE NAV
+========================================= */
+
+.mobile-nav {
+  display: none;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .main-content {
+    margin-left: 220px;
+  }
+
+  .page-content {
+    padding: 32px;
+  }
+
+  .topbar {
+    padding: 0 32px;
+  }
+
+  .course-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+
+    padding-bottom: 75px;
+  }
+
+  .topbar {
+    height: 64px;
+
+    padding: 0 17px;
+
+    gap: 12px;
+  }
+
+  .mobile-brand {
+    display: flex;
+  }
+
+  .search-box {
+    width: auto;
+    flex: 1;
+
+    height: 36px;
+  }
+
+  .topbar-actions {
+    display: none;
+  }
+
+  .page-content {
+    padding: 28px 17px;
+  }
+
+  .welcome-section {
+    flex-direction: column;
+
+    gap: 22px;
+
+    margin-bottom: 38px;
+  }
+
+  .welcome-section h2 {
+    font-size: 28px;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .semester-card {
+    min-width: 0;
+
+    padding: 19px;
+  }
+
+  .section {
+    margin-bottom: 38px;
+  }
+
+  .section-header {
+    align-items: center;
+  }
+
+  .section-header h3 {
+    font-size: 17px;
+  }
+
+  .text-button {
+    font-size: 10px;
+  }
+
+  .continue-card {
+    align-items: flex-start;
+
+    flex-wrap: wrap;
+
+    padding: 17px;
+  }
+
+  .continue-info {
+    min-width: calc(100% - 70px);
+  }
+
+  .continue-button {
+    width: 100%;
+
+    justify-content: center;
+
+    margin-top: 3px;
+  }
+
+  .course-grid {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+  .course-card {
+    padding: 18px;
+  }
+
+  .course-card p {
+    min-height: auto;
+  }
+
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid #e5e7eb;
+
+    z-index: 200;
+
+    backdrop-filter: blur(12px);
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+    font-weight: 500;
+  }
+
+  .mobile-nav-item.active {
+    color: #2563eb;
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 430px) {
+  .mobile-brand strong {
+    font-size: 11px;
+  }
+
+  .search-box {
+    min-width: 0;
+  }
+
+  .search-box input {
+    font-size: 10px;
+  }
+
+  .welcome-section h2 {
+    font-size: 25px;
+  }
+
+  .welcome-section p {
+    font-size: 12px;
+  }
+
+  .semester-card strong {
+    font-size: 18px;
+  }
+
+  .continue-card {
+    gap: 13px;
+  }
+
+  .continue-icon {
+    width: 45px;
+    height: 45px;
+  }
+}
+/* =========================================
+   GLOBAL PAGE ANIMATION
+========================================= */
+
+.page-content {
+  animation: pageFade 0.25s ease;
+}
+
+@keyframes pageFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,833 @@
+.progress-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 0 50px;
+}
+
+.progress-header {
+  margin-bottom: 28px;
+}
+
+.progress-eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.progress-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.progress-header p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* =========================
+   OVERVIEW
+========================= */
+
+.progress-overview {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 38px;
+}
+
+.overall-card,
+.progress-stat {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.overall-card {
+  position: relative;
+  padding: 22px;
+  overflow: hidden;
+}
+
+.overall-icon,
+.progress-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.overall-content {
+  margin-top: 18px;
+}
+
+.overall-content span,
+.progress-stat span {
+  display: block;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.overall-content strong {
+  display: block;
+  margin-top: 4px;
+  color: #111827;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.overall-content p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.overall-progress-bar {
+  width: 100%;
+  height: 7px;
+  margin-top: 20px;
+  overflow: hidden;
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.overall-progress-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+.progress-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 170px;
+  padding: 20px;
+}
+
+.progress-stat strong {
+  display: block;
+  margin-top: 5px;
+  color: #111827;
+  font-size: 27px;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.progress-section {
+  margin-top: 36px;
+}
+
+.progress-section-header {
+  margin-bottom: 16px;
+}
+
+.progress-section-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 19px;
+  letter-spacing: -0.2px;
+}
+
+.progress-section-header p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* =========================
+   SEMESTER
+========================= */
+
+.semester-progress-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.semester-progress-card {
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.semester-progress-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.semester-progress-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.semester-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.semester-progress-title h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 14px;
+}
+
+.semester-progress-title p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.semester-progress-top > strong {
+  flex: 0 0 auto;
+  color: #2563eb;
+  font-size: 14px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  margin-top: 16px;
+  overflow: hidden;
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+/* =========================
+   COURSE
+========================= */
+
+.course-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.course-progress-card {
+  display: block;
+  padding: 18px;
+  color: inherit;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.course-progress-card:hover {
+  transform: translateY(-2px);
+  border-color: #bfdbfe;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.course-progress-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.course-progress-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.course-progress-card-top > span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.course-progress-card h3 {
+  margin: 18px 0 6px;
+  color: #111827;
+  font-size: 15px;
+}
+
+.course-progress-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.course-progress-bar {
+  width: 100%;
+  height: 5px;
+  margin-top: 17px;
+  overflow: hidden;
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.course-progress-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: inherit;
+  transition: width 0.35s ease;
+}
+
+.course-progress-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 13px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================
+   RECENT ACTIVITY
+========================= */
+
+.recent-activity-list {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.recent-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 17px;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s ease;
+}
+
+.recent-activity-item:last-child {
+  border-bottom: 0;
+}
+
+.recent-activity-item:hover {
+  background: #f8fafc;
+}
+
+.recent-activity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #ecfdf5;
+  color: #16a34a;
+}
+
+.recent-activity-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.recent-activity-content strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-activity-content span {
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.recent-activity-item > svg {
+  flex: 0 0 auto;
+  color: #94a3b8;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.progress-empty {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 45px 24px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.progress-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.progress-empty h3 {
+  margin: 15px 0 6px;
+  color: #111827;
+  font-size: 15px;
+}
+
+.progress-empty p {
+  max-width: 420px;
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.progress-empty-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 10px 15px;
+  color: #ffffff;
+  background: #2563eb;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1100px) {
+  .progress-page {
+    padding-right: 4px;
+    padding-left: 4px;
+  }
+
+  .progress-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .overall-card {
+    grid-column: span 2;
+  }
+
+  .course-progress-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+  .progress-page {
+    padding: 4px 0 90px;
+  }
+
+  .progress-header {
+    margin-bottom: 22px;
+  }
+
+  .progress-header h1 {
+    font-size: 25px;
+  }
+
+  .progress-header p {
+    font-size: 13px;
+  }
+
+  .progress-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .overall-card {
+    grid-column: span 2;
+  }
+
+  .progress-stat {
+    min-height: 135px;
+    padding: 16px;
+  }
+
+  .overall-card {
+    padding: 18px;
+  }
+
+  .semester-progress-list,
+  .course-progress-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .progress-section {
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 430px) {
+  .progress-header h1 {
+    font-size: 23px;
+  }
+
+  .overall-content strong {
+    font-size: 27px;
+  }
+
+  .progress-stat strong {
+    font-size: 23px;
+  }
+
+  .semester-progress-card,
+  .course-progress-card {
+    padding: 16px;
+  }
+
+  .semester-progress-top {
+    align-items: flex-start;
+  }
+
+  .semester-progress-title {
+    align-items: flex-start;
+  }
+
+  .semester-number {
+    width: 34px;
+    height: 34px;
+  }
+
+  .semester-progress-title h3 {
+    font-size: 13px;
+  }
+
+  .semester-progress-title p {
+    font-size: 11px;
+  }
+
+  .recent-activity-item {
+    padding: 13px;
+  }
+}
+/* =========================================
+   QUIZ PERFORMANCE
+========================================= */
+
+.quiz-performance-section {
+  margin-top: 24px;
+}
+
+.quiz-performance-summary {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.quiz-performance-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: right;
+}
+
+.quiz-performance-summary span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.quiz-performance-summary strong {
+  font-size: 17px;
+  color: #111827;
+}
+
+.quiz-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.quiz-result-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.quiz-result-card:hover {
+  border-color: #bfdbfe;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.quiz-result-card-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.quiz-result-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.quiz-result-card-content span {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.quiz-result-card-content h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  color: #111827;
+}
+
+.quiz-result-card-content p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.quiz-result-score {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  min-width: 62px;
+  justify-content: flex-end;
+}
+
+.quiz-result-score strong {
+  font-size: 19px;
+  color: #2563eb;
+}
+
+.quiz-result-score span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.quiz-result-arrow {
+  flex-shrink: 0;
+  color: #94a3b8;
+}
+
+.quiz-empty-state {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 22px;
+  padding: 22px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+}
+
+.quiz-empty-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.quiz-empty-state > div:nth-child(2) {
+  flex: 1;
+}
+
+.quiz-empty-state h3 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: #111827;
+}
+
+.quiz-empty-state p {
+  margin: 0;
+  max-width: 620px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+.quiz-empty-state > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 9px 13px;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* =========================================
+   QUIZ RESPONSIVE
+========================================= */
+
+@media (max-width: 768px) {
+  .quiz-performance-summary {
+    gap: 18px;
+  }
+
+  .quiz-result-card {
+    padding: 14px;
+  }
+
+  .quiz-empty-state {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .quiz-empty-state > div:nth-child(2) {
+    min-width: calc(100% - 60px);
+  }
+
+  .quiz-empty-state > a {
+    margin-left: 57px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quiz-performance-summary {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .quiz-performance-summary > div {
+    text-align: left;
+  }
+
+  .quiz-result-card {
+    gap: 10px;
+  }
+
+  .quiz-result-card-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .quiz-result-card-content h3 {
+    font-size: 13px;
+  }
+
+  .quiz-result-card-content p {
+    font-size: 11px;
+  }
+
+  .quiz-result-score {
+    min-width: 48px;
+  }
+
+  .quiz-result-score strong {
+    font-size: 16px;
+  }
+
+  .quiz-result-arrow {
+    display: none;
+  }
+
+  .quiz-empty-state {
+    padding: 17px;
+  }
+
+  .quiz-empty-state > div:nth-child(2) {
+    min-width: calc(100% - 52px);
+  }
+
+  .quiz-empty-state > a {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+}
+/* =========================================
+   QUIZ RESULT STATUS
+========================================= */
+
+.quiz-result-card-content p {
+  margin-top: 5px;
+}
+
+.quiz-result-card-icon {
+  flex-shrink: 0;
+}
+
+.quiz-result-score {
+  flex-shrink: 0;
+}

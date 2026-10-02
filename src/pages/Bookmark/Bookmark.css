@@ -1,0 +1,265 @@
+.bookmark-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.bookmark-header {
+  margin-bottom: 28px;
+}
+
+.bookmark-eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bookmark-header h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 750;
+}
+
+.bookmark-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.bookmark-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bookmark-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.bookmark-card:hover {
+  transform: translateY(-2px);
+  border-color: #bfdbfe;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.bookmark-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.bookmark-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookmark-course {
+  display: block;
+  margin-bottom: 5px;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bookmark-content h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bookmark-content p {
+  margin: 5px 0 9px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.bookmark-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bookmark-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+.bookmark-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  color: #64748b;
+}
+
+.bookmark-empty {
+  padding: 60px 20px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.bookmark-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 15px;
+  border-radius: 15px;
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.bookmark-empty h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 16px;
+}
+
+.bookmark-empty p {
+  max-width: 400px;
+  margin: 7px auto 18px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.bookmark-empty a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .bookmark-header h1 {
+    font-size: 25px;
+  }
+
+  .bookmark-card {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .bookmark-icon {
+    width: 37px;
+    height: 37px;
+  }
+
+  .bookmark-arrow {
+    width: 29px;
+    height: 29px;
+  }
+
+  .bookmark-content p {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 430px) {
+  .bookmark-card {
+    align-items: flex-start;
+  }
+
+  .bookmark-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .bookmark-meta {
+    flex-wrap: wrap;
+    gap: 7px 12px;
+  }
+}
+/* =========================================
+   BOOKMARK LOCK
+========================================= */
+
+.bookmark-card.locked {
+  opacity: 0.58;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.bookmark-card.locked:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #e2e8f0;
+}
+
+.bookmark-card.locked .bookmark-icon {
+  color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.bookmark-card.locked .bookmark-course {
+  color: #94a3b8;
+}
+
+.bookmark-card.locked h2 {
+  color: #64748b;
+}
+
+.bookmark-card.locked p {
+  color: #94a3b8;
+}
+
+.bookmark-card.locked .bookmark-meta {
+  color: #94a3b8;
+}
+
+.bookmark-card.locked .bookmark-arrow {
+  color: #94a3b8;
+}
+
+.bookmark-lock-status {
+  color: #94a3b8;
+}
+
+.bookmark-completed-status {
+  color: #16a34a;
+}
+
+.bookmark-card.completed .bookmark-icon {
+  color: #16a34a;
+}
